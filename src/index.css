@@ -1,13 +1,21 @@
+@font-face {
+  font-family: "Kanit-Light";
+  src: local("Kanit-Light"), url(./fonts/Kanit-Light.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "Kanit-Medium";
+  src: local("Kanit-Medium"), url(./fonts/Kanit-Medium.ttf) format("truetype");
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: "Kanit-Light", "Kanit-Medium", "Roboto", "Oxygen", "Ubuntu",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: "Kanit-Light", monospace;
 }

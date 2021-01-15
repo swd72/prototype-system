@@ -13,10 +13,10 @@ import {
 } from "react-icons/io";
 
 import HomePage from './views/Home'
-// import SignInPage from './views/SignIn'
-// import ProfilePage from './views/Profile'
+import SignOutPage from './views/SignOut'
 
 function Loading(props) {
+  console.log(props)
   const refresh = () => {
     window.location.reload(false);
   };
@@ -45,9 +45,9 @@ function Loading(props) {
       </div>
     );
   } else if (props.pastDelay) {
-    return <LoadingBar progress={50} />
+    return <LoadingBar progress={98} />
   } else if (props.isLoading) {
-    return <LoadingBar progress={20} />
+    return <LoadingBar progress={50} />
   } else {
     return null;
   }
@@ -65,6 +65,7 @@ export const route = [
     color: "#3E86B8",
     bgcolor: "#93CCF3",
     router: "/index",
+    layout: "/side",
     icon: <IoIosHome size="30" />,
     menuStatus: false,
     component: HomePage,
@@ -115,21 +116,12 @@ export const route = [
     color: "#3E86B8",
     bgcolor: "#93CCF3",
     router: "/profile",
+    layout: "/side",
     icon: <IoMdContact size="30" />,
     menuStatus: true,
     component: ProfilePage,
     role: null,
   },
-  // {
-  //   title: "เข้าสู่ระบบ",
-  //   color: "#3E86B8",
-  //   bgcolor: "#93CCF3",
-  //   router: "/login",
-  //   icon: <IoIosFingerPrint size="30" />,
-  //   menuStatus: false,
-  //   component: SignInPage,
-  //   role: null,
-  // },
   {
     title: "ออกจากระบบ",
     color: "#3E86B8",
@@ -137,7 +129,7 @@ export const route = [
     router: "/logout",
     icon: <IoMdLogOut size="30" color="red" />,
     menuStatus: true,
-    component: HomePage,
+    component: SignOutPage,
     role: null,
   },
   

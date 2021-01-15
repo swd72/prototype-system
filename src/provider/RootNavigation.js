@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { Switch, Route, Redirect } from "react-router-dom";
@@ -8,8 +8,8 @@ import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import Hidden from "@material-ui/core/Hidden";
 import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+// import Menu from "@material-ui/core/Menu";
+// import MenuItem from "@material-ui/core/MenuItem";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -31,11 +31,14 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Badge from "@material-ui/core/Badge";
 import MailIcon from "@material-ui/icons/Mail";
 import NotificationsIcon from "@material-ui/icons/Notifications";
+import Brightness4Icon from "@material-ui/icons/Brightness4";
+import BrightnessHighIcon from "@material-ui/icons/BrightnessHigh";
 import { Container } from "@material-ui/core";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Grow from "@material-ui/core/Grow";
 import Paper from "@material-ui/core/Paper";
 import Popper from "@material-ui/core/Popper";
+import { AuthContext } from "./AuthProvider";
 
 const drawerWidth = 230;
 
@@ -94,10 +97,10 @@ const useStyles = (props) =>
       backgroundColor: "red",
     },
     popper: {
-      marginTop:5,
+      marginTop: 5,
       marginLeft: 25,
-      marginRight: 15
-    }
+      marginRight: 15,
+    },
   }));
 
 function ResponsiveDrawer(props) {
@@ -109,14 +112,20 @@ function ResponsiveDrawer(props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMessage, setOpenMessage] = useState(false);
   const anchorRef = useRef(null);
+  
+  const [openAccount, setOpenAccount] = useState(false);
+  const anchorRefAccount = useRef(null);
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const barMenuOpen = Boolean(anchorEl);
   const [sidemenu] = useState(route);
   const token = useSelector((state) => state.token);
   const matches_sm = useMediaQuery((theme) => theme.breakpoints.up("md"));
 
-  const { progress } = useContext(StateContext);
+  const { progress, styleMode, toggleStyle } = useContext(StateContext);
+  const { cookies, logout } = useContext(AuthContext);
+
+  useEffect(() => {
+    console.log(cookies);
+  }, [cookies]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -138,15 +147,20 @@ function ResponsiveDrawer(props) {
     if (event.key === "Tab") {
       event.preventDefault();
       setOpenMessage(false);
+      setOpenMessage(false);
     }
   }
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleMenu = () => {
+    setOpenAccount((prevOpen) => !prevOpen);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleClose = (event) => {
+    if (anchorRefAccount.current && anchorRefAccount.current.contains(event.target)) {
+      return;
+    }
+
+    setOpenAccount(false);
   };
 
   const getRoutes = (routes) => {
@@ -236,7 +250,18 @@ function ResponsiveDrawer(props) {
     <div className={classes.root}>
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar variant="dense">
+        <Toolbar
+          variant="dense"
+          style={
+            styleMode === "dark"
+              ? {
+                  backgroundColor: "#424242",
+                  borderBottom: "85888C 1px",
+                  color: "#FFFFFF",
+                }
+              : {}
+          }
+        >
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -251,7 +276,6 @@ function ResponsiveDrawer(props) {
           </Typography>
           <div className={classes.grow} />
           <div>
-            
             <IconButton
               ref={anchorRef}
               aria-controls={openMessage ? "menu-list-grow" : undefined}
@@ -262,22 +286,6 @@ function ResponsiveDrawer(props) {
               <Badge badgeContent={4} color="secondary">
                 <MailIcon /> {/*NotificationsIcon Message*/}
               </Badge>
-            </IconButton>
-
-            <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={17} color="secondary">
-                <NotificationsIcon /> {/*NotificationsIcon */}
-              </Badge>
-            </IconButton>
-
-            <IconButton
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleMenu}
-              color="inherit"
-            >
-              <AccountCircle /> {/*User Account Menu*/}
             </IconButton>
             <Popper
               open={openMessage}
@@ -302,9 +310,7 @@ function ResponsiveDrawer(props) {
                           <ListItemText
                             className="text-center"
                             primary={
-                              <Typography variant="body1">
-                                Message
-                              </Typography>
+                              <Typography variant="body1">Message</Typography>
                             }
                           />
                         </ListItem>
@@ -357,29 +363,85 @@ function ResponsiveDrawer(props) {
               )}
             </Popper>
 
-            {token?.user && (
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={barMenuOpen}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={() => history.push("/profile")}>
-                  Profile
-                </MenuItem>
-                <MenuItem onClick={() => history.push("/logout")}>
-                  ออกจากระบบ
-                </MenuItem>
-              </Menu>
+            <IconButton aria-label="show 17 new notifications" color="inherit">
+              <Badge badgeContent={17} color="secondary">
+                <NotificationsIcon /> {/*NotificationsIcon */}
+              </Badge>
+            </IconButton>
+
+            <IconButton
+              aria-label="mode "
+              color="inherit"
+              onClick={toggleStyle}
+            >
+              {styleMode === "light" ? (
+                <Brightness4Icon />
+              ) : (
+                <BrightnessHighIcon />
+              )}
+            </IconButton>
+
+            {cookies?.user?.username && (
+              <>
+                <IconButton
+                  ref={anchorRefAccount}
+                  aria-controls={openAccount ? "menu-list-grow" : undefined}
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
+                >
+                  <AccountCircle /> {/*User Account Menu*/}
+                </IconButton>
+
+                <Popper
+                  open={openAccount}
+                  anchorEl={anchorRefAccount.current}
+                  role={undefined}
+                  transition
+                  disablePortal
+                  className={classes.popper}
+                >
+                  {({ TransitionProps, placement }) => (
+                    <Grow
+                      {...TransitionProps}
+                      style={{
+                        transformOrigin:
+                          placement === "bottom"
+                            ? "center top"
+                            : "center bottom",
+                      }}
+                    >
+                      <Paper>
+                        <ClickAwayListener onClickAway={handleClose}>
+                          <List
+                            id="menu-list-grow"
+                            onKeyDown={handleListKeyDown}
+                          >
+                            <ListItem
+                              alignItems="flex-start"
+                              button
+                              onClick={() => history.push("/profile")}
+                            >
+                              <ListItemText primary="Profile" />
+                            </ListItem>
+                            <Divider />
+                            <ListItem
+                              alignItems="flex-start"
+                              button
+                              onClick={() => {
+                                logout();
+                                setOpenAccount(false);
+                              }}
+                            >
+                              <ListItemText primary="ออกจากระบบ" />
+                            </ListItem>
+                          </List>
+                        </ClickAwayListener>
+                      </Paper>
+                    </Grow>
+                  )}
+                </Popper>
+              </>
             )}
           </div>
         </Toolbar>

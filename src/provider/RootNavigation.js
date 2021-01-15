@@ -251,6 +251,7 @@ function ResponsiveDrawer(props) {
           </Typography>
           <div className={classes.grow} />
           <div>
+            
             <IconButton
               ref={anchorRef}
               aria-controls={openMessage ? "menu-list-grow" : undefined}
@@ -259,14 +260,16 @@ function ResponsiveDrawer(props) {
               color="inherit"
             >
               <Badge badgeContent={4} color="secondary">
-                <MailIcon />
+                <MailIcon /> {/*NotificationsIcon Message*/}
               </Badge>
             </IconButton>
+
             <IconButton aria-label="show 17 new notifications" color="inherit">
               <Badge badgeContent={17} color="secondary">
-                <NotificationsIcon />
+                <NotificationsIcon /> {/*NotificationsIcon */}
               </Badge>
             </IconButton>
+
             <IconButton
               aria-label="account of current user"
               aria-controls="menu-appbar"
@@ -274,7 +277,7 @@ function ResponsiveDrawer(props) {
               onClick={handleMenu}
               color="inherit"
             >
-              <AccountCircle />
+              <AccountCircle /> {/*User Account Menu*/}
             </IconButton>
             <Popper
               open={openMessage}

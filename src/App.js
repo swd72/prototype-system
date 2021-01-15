@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import ProviderRoot from "./provider";
-import { Router, Route, Switch, Redirect } from "react-router-dom";
+import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { CookiesProvider } from "react-cookie";
 

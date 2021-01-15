@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { Switch, Route, Redirect } from "react-router-dom";
@@ -20,7 +20,7 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import MenuIcon from "@material-ui/icons/Menu";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles /*useTheme*/ } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { route } from "../route";
@@ -32,6 +32,10 @@ import Badge from "@material-ui/core/Badge";
 import MailIcon from "@material-ui/icons/Mail";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import { Container } from "@material-ui/core";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Grow from "@material-ui/core/Grow";
+import Paper from "@material-ui/core/Paper";
+import Popper from "@material-ui/core/Popper";
 
 const drawerWidth = 230;
 
@@ -41,7 +45,7 @@ const useStyles = (props) =>
       display: "flex",
     },
     drawer: {
-      [theme.breakpoints.up("sm")]:
+      [theme.breakpoints.up("md")]:
         props.layout_type === "side"
           ? {
               width: drawerWidth,
@@ -57,7 +61,7 @@ const useStyles = (props) =>
     },
     menuButton: {
       marginRight: theme.spacing(2),
-      [theme.breakpoints.up("sm")]:
+      [theme.breakpoints.up("md")]:
         props.layout_type === "side"
           ? {
               display: "none",
@@ -81,6 +85,19 @@ const useStyles = (props) =>
       paddingTop: 5,
       paddingBottom: 5,
     },
+    listItemText: {
+      fontSize: 20,
+      fontWeight: "bold !important",
+      textAlign: "center",
+    },
+    listItemTextFirst: {
+      backgroundColor: "red",
+    },
+    popper: {
+      marginTop:5,
+      marginLeft: 25,
+      marginRight: 15
+    }
   }));
 
 function ResponsiveDrawer(props) {
@@ -88,20 +105,41 @@ function ResponsiveDrawer(props) {
 
   const classes = useStyles(props)();
   const history = useHistory();
-  const theme = useTheme();
-
+  // const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openMessage, setOpenMessage] = useState(false);
+  const anchorRef = useRef(null);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const barMenuOpen = Boolean(anchorEl);
   const [sidemenu] = useState(route);
   const token = useSelector((state) => state.token);
-  const matches_sm = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const matches_sm = useMediaQuery((theme) => theme.breakpoints.up("md"));
 
   const { progress } = useContext(StateContext);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  const handleToggle = () => {
+    setOpenMessage((prevOpen) => !prevOpen);
+  };
+
+  const handleCloseMessage = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+
+    setOpenMessage(false);
+  };
+
+  function handleListKeyDown(event) {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      setOpenMessage(false);
+    }
+  }
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -213,7 +251,13 @@ function ResponsiveDrawer(props) {
           </Typography>
           <div className={classes.grow} />
           <div>
-            <IconButton aria-label="show 4 new mails" color="inherit">
+            <IconButton
+              ref={anchorRef}
+              aria-controls={openMessage ? "menu-list-grow" : undefined}
+              aria-haspopup="true"
+              onClick={handleToggle}
+              color="inherit"
+            >
               <Badge badgeContent={4} color="secondary">
                 <MailIcon />
               </Badge>
@@ -232,6 +276,83 @@ function ResponsiveDrawer(props) {
             >
               <AccountCircle />
             </IconButton>
+            <Popper
+              open={openMessage}
+              anchorEl={anchorRef.current}
+              role={undefined}
+              transition
+              disablePortal
+              className={classes.popper}
+            >
+              {({ TransitionProps, placement }) => (
+                <Grow
+                  {...TransitionProps}
+                  style={{
+                    transformOrigin:
+                      placement === "bottom" ? "center top" : "center bottom",
+                  }}
+                >
+                  <Paper>
+                    <ClickAwayListener onClickAway={handleCloseMessage}>
+                      <List id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                        <ListItem alignItems="flex-start">
+                          <ListItemText
+                            className="text-center"
+                            primary={
+                              <Typography variant="body1">
+                                Message
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                        <Divider />
+                        <ListItem alignItems="flex-start" button>
+                          <ListItemText
+                            primary="Oui Oui"
+                            secondary={
+                              <React.Fragment>
+                                <Typography
+                                  component="span"
+                                  variant="body2"
+                                  className={classes.inline}
+                                  color="textPrimary"
+                                >
+                                  Sandra Adams
+                                </Typography>
+                                {
+                                  " — Do you have Paris recommendations? Have you ever…"
+                                }
+                              </React.Fragment>
+                            }
+                          />
+                        </ListItem>
+                        <Divider />
+                        <ListItem alignItems="flex-start" button>
+                          <ListItemText
+                            primary="Oui Oui"
+                            secondary={
+                              <React.Fragment>
+                                <Typography
+                                  component="span"
+                                  variant="body2"
+                                  className={classes.inline}
+                                  color="textPrimary"
+                                >
+                                  Sandra Adams
+                                </Typography>
+                                {
+                                  " — Do you have Paris recommendations? Have you ever…"
+                                }
+                              </React.Fragment>
+                            }
+                          />
+                        </ListItem>
+                      </List>
+                    </ClickAwayListener>
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
 
             {token?.user && (
               <Menu
@@ -262,11 +383,11 @@ function ResponsiveDrawer(props) {
       </AppBar>
 
       <nav className={classes.drawer} aria-label="mailbox folders">
-        <Hidden smUp implementation="css">
+        <Hidden mdUp implementation="css">
           <Drawer
             container={container}
             variant="temporary"
-            anchor={theme.direction === "rtl" ? "right" : "left"}
+            anchor={"left"}
             open={mobileOpen}
             onClose={handleDrawerToggle}
             classes={{
@@ -280,17 +401,19 @@ function ResponsiveDrawer(props) {
           </Drawer>
         </Hidden>
 
-        {layout_type === "side" && <Hidden xsDown implementation="css">
-          <Drawer
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-            variant="permanent"
-            open
-          >
-            {drawerListItem}
-          </Drawer>
-        </Hidden>}
+        {layout_type === "side" && (
+          <Hidden smDown implementation="css">
+            <Drawer
+              classes={{
+                paper: classes.drawerPaper,
+              }}
+              variant="permanent"
+              open
+            >
+              {drawerListItem}
+            </Drawer>
+          </Hidden>
+        )}
       </nav>
       <Container className={classes.content}>
         <Toolbar variant="dense" />

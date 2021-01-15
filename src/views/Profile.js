@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Button from "@material-ui/core/Button";
 import { Form, FormGroup, Label, Input, Container } from "reactstrap";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import Chip from "@material-ui/core/Chip";
 import Avatar from "@material-ui/core/Avatar";
 
 export default function FullScreenDialog(props) {
-  const token = useSelector((state) => state.token);
-  const [messageError, setMessageError] = useState("");
+  // const token = useSelector((state) => state.token);
 
   const { register, handleSubmit } = useForm({});
 
@@ -22,7 +21,6 @@ export default function FullScreenDialog(props) {
               <div>
                 <Form onSubmit={handleSubmit((data) => onSubmitFirstForm(data))}>
                 <Container className="py-3">
-                  {messageError}
                   <FormGroup>
                     <Label for="username">ชื่อผู้ใช้งาน</Label>
                     <Input

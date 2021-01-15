@@ -1,9 +1,11 @@
 import React from "react";
+import Loadable from "react-loadable";
+import LoadingBar from "react-top-loading-bar";
 import {
   IoIosAddCircle,
   IoIosHome,
   IoMdDocument,
-  IoIosFingerPrint,
+  // IoIosFingerPrint,
   IoIosPeople,
   IoMdLogOut,
   IoMdContact,
@@ -11,8 +13,52 @@ import {
 } from "react-icons/io";
 
 import HomePage from './views/Home'
-import SignInPage from './views/SignIn'
-import ProfilePage from './views/Profile'
+// import SignInPage from './views/SignIn'
+// import ProfilePage from './views/Profile'
+
+function Loading(props) {
+  const refresh = () => {
+    window.location.reload(false);
+  };
+  if (props.error) {
+    return (
+      <div className="text-center text-danger">
+        Error! ...{" "}
+        <strong style={{ cursor: "pointer" }} onClick={refresh}>
+          คลิ๊ก
+        </strong>{" "}
+        หรือ กด <strong>Ctrl+F5</strong>{" "}
+      </div>
+    );
+  } else if (props.timedOut) {
+    return (
+      <div className="text-center">
+        โปรแกรมใช้เวลาโหลด package นานเกินไป ...{" "}
+        <strong
+          style={{ cursor: "pointer" }}
+          onClick={refresh}
+          className="text-danger"
+        >
+          คลิ๊ก
+        </strong>{" "}
+        หรือ กด <strong>Ctrl+F5</strong>{" "}
+      </div>
+    );
+  } else if (props.pastDelay) {
+    return <LoadingBar progress={50} />
+  } else if (props.isLoading) {
+    return <LoadingBar progress={20} />
+  } else {
+    return null;
+  }
+}
+
+const ProfilePage = Loadable({
+  loader: () => import("./views/Profile"),
+  loading: (propsLoad) => <Loading {...propsLoad} />,
+  timeout: 5000,
+});
+
 export const route = [
   {
     title: "หน้าแรก",

@@ -1,12 +1,17 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 // import jwt_decode from "jwt-decode";
 import { useCookies } from "react-cookie";
+import { useHistory } from "react-router-dom";
 
 export const AuthContext = createContext({});
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [cookies, setCookie, removeCookie] = useCookies(['user']);
+  const [cookies, setCookie, removeCookie] = useCookies();
+  const history = useHistory()
 
+  useEffect(() => {
+    setUser(cookies.user)
+  }, [cookies])
   return (
     <AuthContext.Provider
       value={{
@@ -17,8 +22,9 @@ export const AuthProvider = ({ children }) => {
           try {
             console.log(username, password);
             setCookie("user", { username, password }, { path: "/" });
+            setUser({ username, password });
+            history.push('/')
           } catch (e) {
-            // setLoading(false);
             console.log(e);
           }
         },
@@ -30,9 +36,8 @@ export const AuthProvider = ({ children }) => {
         },
         logout: async () => {
           try {
-            console.log('ddddd')
-            removeCookie('user')
-            removeCookie('name')
+            removeCookie("user", { path: "/" });
+            setUser(null)
           } catch (e) {
             console.error(e);
           }

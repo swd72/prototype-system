@@ -1,5 +1,5 @@
 import "core-js/stable";
-// import "@babel/polyfill";
+import './text-encoding-polyfill.js';
 import React from "react";
 import ReactDOM from "react-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -13,7 +13,7 @@ import { Provider } from "react-redux";
 import MyReducer from "./reducer/MyReducer";
 
 const store = createStore(MyReducer, {
-  token: {},
+  objtoken: {},
 });
 
 ReactDOM.render(

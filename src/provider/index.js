@@ -11,7 +11,7 @@ export default function Providers() {
         <Switch>
           <Route path="/side" render={(props) => <RootNavigation layout_type="side" {...props} />} />
           <Route path="/unside" render={(props) => <RootNavigation layout_type="unside" {...props} />} />
-          <Route path="/sigin" render={(props) => <SignInPage {...props} />} />
+          <Route path="/sigin" component={SignInPage} />
           <Redirect from="/" to="/side/index" />
         </Switch>
       </StateProvider>

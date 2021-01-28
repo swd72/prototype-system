@@ -22,7 +22,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles /*useTheme*/ } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import { route } from "../route";
 import { deepPurple } from "@material-ui/core/colors";
 import LoadingBar from "react-top-loading-bar";
@@ -30,7 +30,7 @@ import { StateContext } from "./StateProvider";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Badge from "@material-ui/core/Badge";
 import MailIcon from "@material-ui/icons/Mail";
-import NotificationsIcon from "@material-ui/icons/Notifications";
+// import NotificationsIcon from "@material-ui/icons/Notifications";
 import Brightness4Icon from "@material-ui/icons/Brightness4";
 import BrightnessHighIcon from "@material-ui/icons/BrightnessHigh";
 import { Container } from "@material-ui/core";
@@ -39,6 +39,7 @@ import Grow from "@material-ui/core/Grow";
 import Paper from "@material-ui/core/Paper";
 import Popper from "@material-ui/core/Popper";
 import { AuthContext } from "./AuthProvider";
+import { IoIosFingerPrint } from "react-icons/io";
 
 const drawerWidth = 230;
 
@@ -106,26 +107,25 @@ const useStyles = (props) =>
 function ResponsiveDrawer(props) {
   const { window, layout_type } = props;
 
-  const classes = useStyles(props)();
-  const history = useHistory();
-  // const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMessage, setOpenMessage] = useState(false);
-  const anchorRef = useRef(null);
-  
   const [openAccount, setOpenAccount] = useState(false);
+  const [sidemenu] = useState(route);
+
+  const classes = useStyles(props)();
+  const history = useHistory();
+  const anchorRef = useRef(null);
   const anchorRefAccount = useRef(null);
 
-  const [sidemenu] = useState(route);
-  const token = useSelector((state) => state.token);
   const matches_sm = useMediaQuery((theme) => theme.breakpoints.up("md"));
 
   const { progress, styleMode, toggleStyle } = useContext(StateContext);
-  const { cookies, logout } = useContext(AuthContext);
+  const { cookies, logout, user } = useContext(AuthContext);
 
   useEffect(() => {
     console.log(cookies);
-  }, [cookies]);
+    console.log(user);
+  }, [cookies, user]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -156,7 +156,10 @@ function ResponsiveDrawer(props) {
   };
 
   const handleClose = (event) => {
-    if (anchorRefAccount.current && anchorRefAccount.current.contains(event.target)) {
+    if (
+      anchorRefAccount.current &&
+      anchorRefAccount.current.contains(event.target)
+    ) {
       return;
     }
 
@@ -166,10 +169,7 @@ function ResponsiveDrawer(props) {
   const getRoutes = (routes) => {
     // eslint-disable-next-line
     return routes.map((prop, key) => {
-      if (
-        prop.role === null ||
-        token?.user?.userType?.indexOf(prop.role) >= 0
-      ) {
+      if (prop.role === null || user?.userType?.indexOf(prop.role) >= 0) {
         return (
           <Route
             exact
@@ -193,9 +193,8 @@ function ResponsiveDrawer(props) {
       <List>
         {sidemenu.map(
           (val, index) =>
-            (val.role === null ||
-              token?.user?.userType?.indexOf(val.role) >= 0) &&
-            (localStorage.getItem("token")
+            (val.role === null || user?.userType?.indexOf(val.role) >= 0) &&
+            (cookies?.ac_token
               ? val.router !== "/login"
               : val.router !== "/logout") && (
               <ListItem
@@ -223,16 +222,16 @@ function ResponsiveDrawer(props) {
       <ListItem button>
         <ListItemAvatar style={{ margin: -8 }}>
           <Avatar className={classes.purple}>
-            {token?.user?.fname?.charAt(0)?.toUpperCase()}
+            {user?.fname?.charAt(0)?.toUpperCase()}
           </Avatar>
         </ListItemAvatar>
-        {token?.user && (
+        {user && (
           <ListItemText
-            primary={token?.user?.fname + "  " + token?.user?.lname}
-            secondary={token?.user?.username}
+            primary={user?.fname + "  " + user?.lname}
+            secondary={user?.username}
           />
         )}
-        {!token?.user && (
+        {!user && (
           <ListItemText
             primary={"Guest"}
             secondary={"กรุณาเข้าสู่ระบบเพื่อใช้งาน"}
@@ -240,6 +239,26 @@ function ResponsiveDrawer(props) {
         )}
       </ListItem>
       {list("left")}
+
+      {!user && (
+        <List>
+          <ListItem
+            button
+            className={classes.listItem}
+            onClick={() => {
+              history.push("/sigin");
+              setMobileOpen(false);
+            }}
+          >
+            <ListItemIcon>
+              <IoIosFingerPrint size={30} />
+            </ListItemIcon>
+            <ListItemText primary={"เข้าสู่ระบบ"} />
+          </ListItem>
+        </List>
+      )}
+
+      <Divider />
     </>
   );
 
@@ -363,11 +382,11 @@ function ResponsiveDrawer(props) {
               )}
             </Popper>
 
-            <IconButton aria-label="show 17 new notifications" color="inherit">
+            {/* <IconButton aria-label="show 17 new notifications" color="inherit">
               <Badge badgeContent={17} color="secondary">
-                <NotificationsIcon /> {/*NotificationsIcon */}
+                <NotificationsIcon /> 
               </Badge>
-            </IconButton>
+            </IconButton> */}
 
             <IconButton
               aria-label="mode "

@@ -1,63 +1,25 @@
-import React from "react";
-import Loadable from "react-loadable";
-import LoadingBar from "react-top-loading-bar";
+import React, { lazy, Suspense } from "react";
+import LinearProgress from '@material-ui/core/LinearProgress';
 import {
   IoIosAddCircle,
   IoIosHome,
   IoMdDocument,
-  // IoIosFingerPrint,
   IoIosPeople,
   IoMdLogOut,
   IoMdContact,
-  IoMdCube
+  IoMdCube,
 } from "react-icons/io";
+import HomePage from "./views/Home";
+import SignOutPage from "./views/SignOut";
+// import ProfilePage from "./views/Profile";
 
-import HomePage from './views/Home'
-import SignOutPage from './views/SignOut'
+const load = (Component) => (props) => (
+  <Suspense fallback={<LinearProgress />}>
+    <Component {...props} />
+  </Suspense>
+);
 
-function Loading(props) {
-  console.log(props)
-  const refresh = () => {
-    window.location.reload(false);
-  };
-  if (props.error) {
-    return (
-      <div className="text-center text-danger">
-        Error! ...{" "}
-        <strong style={{ cursor: "pointer" }} onClick={refresh}>
-          คลิ๊ก
-        </strong>{" "}
-        หรือ กด <strong>Ctrl+F5</strong>{" "}
-      </div>
-    );
-  } else if (props.timedOut) {
-    return (
-      <div className="text-center">
-        โปรแกรมใช้เวลาโหลด package นานเกินไป ...{" "}
-        <strong
-          style={{ cursor: "pointer" }}
-          onClick={refresh}
-          className="text-danger"
-        >
-          คลิ๊ก
-        </strong>{" "}
-        หรือ กด <strong>Ctrl+F5</strong>{" "}
-      </div>
-    );
-  } else if (props.pastDelay) {
-    return <LoadingBar progress={98} />
-  } else if (props.isLoading) {
-    return <LoadingBar progress={50} />
-  } else {
-    return null;
-  }
-}
-
-const ProfilePage = Loadable({
-  loader: () => import("./views/Profile"),
-  loading: (propsLoad) => <Loading {...propsLoad} />,
-  timeout: 5000,
-});
+const ProfilePage = load(lazy(() => import("./views/Profile")));
 
 export const route = [
   {
@@ -132,5 +94,4 @@ export const route = [
     component: SignOutPage,
     role: null,
   },
-  
 ];

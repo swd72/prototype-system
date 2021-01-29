@@ -1,0 +1,4 @@
+{
+  "SERVER_URL": "https://office.swdcph.go.th/api",
+  "SERVER_URL_DEV": "http://localhost:3333"
+}

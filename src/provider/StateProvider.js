@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 
@@ -8,6 +8,12 @@ export const StateProvider = ({ children }) => {
   const [styleMode, setStyleMode] = useState(
     localStorage.getItem("styleMode") === "dark" ? "dark" : "light"
   );
+
+  useEffect(()=>{
+    if(styleMode === 'dark'){
+      document.body.classList.add('dark')
+    }
+  })
 
   const THEME = createMuiTheme({
     typography: {
@@ -24,7 +30,13 @@ export const StateProvider = ({ children }) => {
 
   const toggleStyle = () => {
     setStyleMode((prev) => (prev === "light" ? "dark" : "light"));
-    localStorage.setItem("styleMode", styleMode === "light" ? "dark" : "light");
+    if(styleMode === "light"){
+      localStorage.setItem("styleMode", "dark");
+      document.body.classList.add('dark')
+    }else{
+      localStorage.setItem("styleMode", "light");
+      document.body.classList.remove('dark')
+    }
   };
 
   return (

@@ -1,16 +1,12 @@
-import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useContext } from "react";
+import { AuthContext } from "../provider/AuthProvider";
 
 export default function SignOut(props) {
-  const history = useHistory();
-  const dispatch = useDispatch();
+  const { logout } = useContext(AuthContext);
 
   useEffect(() => {
-    localStorage.setItem("token", "");
-    dispatch({ type: "SET_VALUE", name: "token", value: {} });
-    history.push("/login");
-  }, [dispatch, history]);
+    logout();
+  }, [logout]);
 
   return <React.Fragment></React.Fragment>;
 }

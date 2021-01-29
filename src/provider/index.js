@@ -9,10 +9,9 @@ export default function Providers() {
     <AuthProvider>
       <StateProvider>
         <Switch>
-          <Route path="/side" render={(props) => <RootNavigation layout_type="side" {...props} />} />
-          <Route path="/unside" render={(props) => <RootNavigation layout_type="unside" {...props} />} />
+          <Route path="/manage" render={(props) => <RootNavigation {...props} />} />
           <Route path="/sigin" component={SignInPage} />
-          <Redirect from="/" to="/side/index" />
+          <Redirect from="/" to="/manage/index" />
         </Switch>
       </StateProvider>
     </AuthProvider>

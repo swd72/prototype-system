@@ -31,6 +31,8 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Badge from "@material-ui/core/Badge";
 import MailIcon from "@material-ui/icons/Mail";
 // import NotificationsIcon from "@material-ui/icons/Notifications";
+import FastForwardIcon from "@material-ui/icons/FastForward";
+import FastRewindIcon from "@material-ui/icons/FastRewind";
 import Brightness4Icon from "@material-ui/icons/Brightness4";
 import BrightnessHighIcon from "@material-ui/icons/BrightnessHigh";
 import { Container } from "@material-ui/core";
@@ -49,13 +51,12 @@ const useStyles = (props) =>
       display: "flex",
     },
     drawer: {
-      [theme.breakpoints.up("md")]:
-        props.layout_type === "side"
-          ? {
-              width: drawerWidth,
-              flexShrink: 0,
-            }
-          : {},
+      [theme.breakpoints.up("md")]: props.side_status
+        ? {
+            width: drawerWidth,
+            flexShrink: 0,
+          }
+        : {},
     },
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
@@ -65,12 +66,11 @@ const useStyles = (props) =>
     },
     menuButton: {
       marginRight: theme.spacing(2),
-      [theme.breakpoints.up("md")]:
-        props.layout_type === "side"
-          ? {
-              display: "none",
-            }
-          : {},
+      [theme.breakpoints.up("md")]: props.side_status
+        ? {
+            display: "none",
+          }
+        : {},
     },
     toolbar: theme.mixins.toolbar,
     drawerPaper: {
@@ -105,14 +105,12 @@ const useStyles = (props) =>
   }));
 
 function ResponsiveDrawer(props) {
-  const { window, layout_type } = props;
-
+  const { window } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMessage, setOpenMessage] = useState(false);
   const [openAccount, setOpenAccount] = useState(false);
   const [sidemenu] = useState(route);
 
-  const classes = useStyles(props)();
   const history = useHistory();
   const anchorRef = useRef(null);
   const anchorRefAccount = useRef(null);
@@ -120,11 +118,13 @@ function ResponsiveDrawer(props) {
   const matches_sm = useMediaQuery((theme) => theme.breakpoints.up("md"));
 
   const { progress, styleMode, toggleStyle } = useContext(StateContext);
-  const { cookies, logout, user } = useContext(AuthContext);
+  const { cookies, logout, user, setCookie } = useContext(AuthContext);
+
+  const [side_status, setside_status] = useState(true);
+  const classes = useStyles({ side_status: side_status })();
 
   useEffect(() => {
-    console.log(cookies);
-    console.log(user);
+    setside_status(cookies.side_status==='true'?true:false);
   }, [cookies, user]);
 
   const handleDrawerToggle = () => {
@@ -173,7 +173,7 @@ function ResponsiveDrawer(props) {
         return (
           <Route
             exact
-            path={"/" + layout_type + prop.router}
+            path={"/manage" + prop.router}
             component={prop.component}
             key={key}
           />
@@ -194,7 +194,7 @@ function ResponsiveDrawer(props) {
         {sidemenu.map(
           (val, index) =>
             (val.role === null || user?.userType?.indexOf(val.role) >= 0) &&
-            (cookies?.ac_token
+            (user?.username
               ? val.router !== "/login"
               : val.router !== "/logout") && (
               <ListItem
@@ -202,7 +202,7 @@ function ResponsiveDrawer(props) {
                 className={classes.listItem}
                 key={val.title}
                 onClick={() => {
-                  history.push("/" + layout_type + val.router);
+                  history.push("/manage" + val.router);
                   setMobileOpen(false);
                 }}
               >
@@ -241,24 +241,25 @@ function ResponsiveDrawer(props) {
       {list("left")}
 
       {!user && (
-        <List>
-          <ListItem
-            button
-            className={classes.listItem}
-            onClick={() => {
-              history.push("/sigin");
-              setMobileOpen(false);
-            }}
-          >
-            <ListItemIcon>
-              <IoIosFingerPrint size={30} />
-            </ListItemIcon>
-            <ListItemText primary={"เข้าสู่ระบบ"} />
-          </ListItem>
-        </List>
+        <>
+          <List>
+            <ListItem
+              button
+              className={classes.listItem}
+              onClick={() => {
+                history.push("/sigin");
+                setMobileOpen(false);
+              }}
+            >
+              <ListItemIcon>
+                <IoIosFingerPrint size={30} />
+              </ListItemIcon>
+              <ListItemText primary={"เข้าสู่ระบบ"} />
+            </ListItem>
+          </List>
+          <Divider />
+        </>
       )}
-
-      <Divider />
     </>
   );
 
@@ -290,9 +291,23 @@ function ResponsiveDrawer(props) {
           >
             <MenuIcon />
           </IconButton>
+          <Hidden smDown implementation="css">
+            <IconButton
+              onClick={() => {
+                setside_status((p) =>!p);
+                setCookie("side_status", !side_status, { path: "/" });
+              }}
+              color="inherit"
+            >
+              <Badge color="secondary">
+                {side_status ? <FastRewindIcon /> : <FastForwardIcon />}
+              </Badge>
+            </IconButton>
+          </Hidden>
           <Typography variant="h6" noWrap>
             Res
           </Typography>
+
           <div className={classes.grow} />
           <div>
             <IconButton
@@ -400,7 +415,7 @@ function ResponsiveDrawer(props) {
               )}
             </IconButton>
 
-            {cookies?.user?.username && (
+            {user?.username && (
               <>
                 <IconButton
                   ref={anchorRefAccount}
@@ -485,7 +500,7 @@ function ResponsiveDrawer(props) {
           </Drawer>
         </Hidden>
 
-        {layout_type === "side" && (
+        {side_status && (
           <Hidden smDown implementation="css">
             <Drawer
               classes={{
@@ -504,7 +519,7 @@ function ResponsiveDrawer(props) {
         <LoadingBar progress={progress} />
         <Switch>
           {getRoutes(route)}
-          <Redirect from="*" to={"/" + layout_type + "/index"} />
+          <Redirect from="*" to={"/mange/index"} />
         </Switch>
       </Container>
     </div>

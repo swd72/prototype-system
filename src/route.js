@@ -20,6 +20,7 @@ const load = (Component) => (props) => (
 );
 
 const ProfilePage = load(lazy(() => import("./views/Profile")));
+const InformationDataPage = load(lazy(() => import("./views/InformationData")));
 
 export const route = [
   {
@@ -27,7 +28,6 @@ export const route = [
     color: "#3E86B8",
     bgcolor: "#93CCF3",
     router: "/index",
-    layout: "/side",
     icon: <IoIosHome size="30" />,
     menuStatus: false,
     component: HomePage,
@@ -78,10 +78,19 @@ export const route = [
     color: "#3E86B8",
     bgcolor: "#93CCF3",
     router: "/profile",
-    layout: "/side",
     icon: <IoMdContact size="30" />,
     menuStatus: true,
     component: ProfilePage,
+    role: null,
+  },
+  {
+    title: "ข้อมูลส่วนตัว",
+    color: "#3E86B8",
+    bgcolor: "#93CCF3",
+    router: "/testtab",
+    icon: <IoMdContact size="30" />,
+    menuStatus: true,
+    component: InformationDataPage,
     role: null,
   },
   {
@@ -89,7 +98,7 @@ export const route = [
     color: "#3E86B8",
     bgcolor: "#93CCF3",
     router: "/logout",
-    icon: <IoMdLogOut size="30" color="red" />,
+    icon: <IoMdLogOut size="30" color="#C85752" />,
     menuStatus: true,
     component: SignOutPage,
     role: null,

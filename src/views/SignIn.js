@@ -54,27 +54,25 @@ export default function SignIn(props) {
   );
 
   useEffect(() => {
-    axios
-      .post(
-        `${server_url}/auth/refresh-token`,
-        {
+    if (cookies["-token-"]) {
+      axios
+        .post(`${server_url}/auth/refresh-token`, {
           refreshToken: cookies["-token-"],
-        },
-        {
-          headers: { authorization: cookies["token"] },
-        }
-      )
-      .then((rs) => {
-        if (rs.status === 200) {
-          setCookie("token", rs.data.accessToken, { path: "/" });
-          history.push("/");
-        } else if (rs.status === 204) {
-          console.log(rs.data.message);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+        })
+        .then((rs) => {
+          if (rs.status === 200) {
+            setCookie("token", rs.data.accessToken, { path: "/" });
+            history.push("/");
+          } else if (rs.status === 204) {
+            console.log(rs.data.message);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+
+    // eslint-disable-next-line
   }, []);
 
   function onSubmit(values) {

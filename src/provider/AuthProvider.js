@@ -65,9 +65,7 @@ export const AuthProvider = ({ children }) => {
         logout: async () => {
           try {
             axios
-              .delete(
-                `${server_url}/auth/logout/${cookies["-token-"]}`
-              )
+              .delete(`${server_url}/auth/logout/${cookies["-token-"]}`)
               .then((rs) => {
                 removeCookie("user", { path: "/" });
                 removeCookie("token", { path: "/" });
@@ -75,8 +73,13 @@ export const AuthProvider = ({ children }) => {
                 history.push("/");
               })
               .catch((error) => {
-                if (error.response.status === 400) {
-                  console.log(error.response.status);
+                if (
+                  error.response.status === 400 ||
+                  error.response.status === 401
+                ) {
+                  removeCookie("user", { path: "/" });
+                  removeCookie("token", { path: "/" });
+                  setUser(null);
                   history.push("/");
                 }
               });

@@ -4,14 +4,14 @@ import Tabs from "react-responsive-tabs";
 
 export default function InformationData(props) {
   const presidents = [
-    { name: "ข้อมูลส่วนตัว", biography: " first Name" },
-    { name: "ที่อยู่", biography: "..." },
-    { name: "ประวัติการศึกษา", biography: "..." },
-    { name: "ประวัติการอบรม", biography: "..." },
-    { name: "ข้อมูลใบประกอบวิชาชีพ", biography: "..." },
-    { name: "ข้อมูลเครื่องราชอิสริยาภรณ์", biography: "..." },
-    { name: "ข้อมูลการได้รับโทษ", biography: "..." },
-    { name: "ข้อมูลการลา", biography: "..." },
+    { name: "ข้อมูลส่วนตัว", biography: " first ... ข้อมูลส่วนตัว" },
+    { name: "ที่อยู่", biography: "...ที่อยู่" },
+    { name: "ประวัติการศึกษา", biography: "...ประวัติการศึกษา" },
+    { name: "ประวัติการอบรม", biography: "...ประวัติการอบรม" },
+    { name: "ข้อมูลใบประกอบวิชาชีพ", biography: "...ข้อมูลใบประกอบวิชาชีพ" },
+    { name: "ข้อมูลเครื่องราชอิสริยาภรณ์", biography: "...ข้อมูลเครื่องราชอิสริยาภรณ์" },
+    { name: "ข้อมูลการได้รับโทษ", biography: "...ข้อมูลการได้รับโทษ" },
+    { name: "ข้อมูลการลา", biography: "...ข้อมูลการลา" },
   ];
 
   const getTabs = () => {

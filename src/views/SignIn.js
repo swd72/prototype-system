@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -11,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../provider/AuthProvider";
+import axios from "axios";
 
 function Copyright() {
   return (
@@ -48,11 +49,37 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn(props) {
   const classes = useStyles();
   const { errors, handleSubmit, register } = useForm({});
-  const { login } = useContext(AuthContext);
+  const { login, cookies, server_url, setCookie, history } = useContext(
+    AuthContext
+  );
 
-  const onSubmit = (values) => {
+  useEffect(() => {
+    axios
+      .post(
+        `${server_url}/auth/refresh-token`,
+        {
+          refreshToken: cookies["-token-"],
+        },
+        {
+          headers: { authorization: cookies["token"] },
+        }
+      )
+      .then((rs) => {
+        if (rs.status === 200) {
+          setCookie("token", rs.data.accessToken, { path: "/" });
+          history.push("/");
+        } else if (rs.status === 204) {
+          console.log(rs.data.message);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  function onSubmit(values) {
     login(values?.username, values?.password);
-  };
+  }
 
   return (
     <Container component="main" maxWidth="xs">

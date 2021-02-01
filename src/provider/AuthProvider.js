@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }) => {
         user,
         cookies,
         server_url,
+        history,
         setCookie,
         setUser,
         login: async (username, password) => {
@@ -41,6 +42,7 @@ export const AuthProvider = ({ children }) => {
                     path: "/",
                   });
                   setCookie("token", rs.data.accessToken, { path: "/" });
+                  setCookie("-token-", rs.data.refreshToken, { path: "/" });
                   setUser(decoded);
                   history.push("/");
                 } else if (rs.status === 204) {
@@ -63,9 +65,9 @@ export const AuthProvider = ({ children }) => {
         logout: async () => {
           try {
             axios
-              .delete(`${server_url}/auth/logout`, {
-                refreshToken: "",
-              })
+              .delete(
+                `${server_url}/auth/logout/${cookies["-token-"]}`
+              )
               .then((rs) => {
                 removeCookie("user", { path: "/" });
                 removeCookie("token", { path: "/" });

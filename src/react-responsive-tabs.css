@@ -4,7 +4,7 @@ body {
   --selectedBackgroundColor: #fff;
   --selectedBackgroundFocus: #fff;
   --selectedTextColor: rgb(3, 3, 3);
-  --selectedBorderColor: #ddd #ddd #fff;
+  --selectedBorderColor: #acaaaa #acaaaa #fff;
   --tapFocus: #e6e6e6;
 }
 
@@ -13,8 +13,8 @@ body.dark {
   --primaryTextColor: #fff;
   --selectedBackgroundColor: #dddd;
   --selectedBackgroundFocus: #dddd;
-  --selectedTextColor: #000;
-  --selectedBorderColor: #ddd #ddd #fff;
+  --selectedTextColor: rgb(17, 16, 16);
+  --selectedBorderColor: #fff #fff #303030;
   --tapFocus: #7c7a7a;
 }
 
@@ -22,12 +22,6 @@ body.dark {
   position: relative;
 }
 
-/* backgroundColor: "#303030",
-  borderBottom: "85888C 1px",
-  color: "#FFFFFF", */
-/****************************/
-/******** tab styles ********/
-/****************************/
 .RRT__tabs {
   display: flex;
   flex-wrap: wrap;
@@ -40,7 +34,7 @@ body.dark {
 .RRT__tab {
   background: var(--primaryBackgroundColor);
   border-style: solid;
-  border-color: #b3b1b1;
+  border-color: #acaaaa;
   border-width: 1px 1px 1px 0;
   cursor: pointer;
   z-index: 1;

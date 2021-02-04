@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
                 }
               })
               .catch((error) => {
-                console.log(error);
+                console.log(error.message);
               });
           } catch (e) {
             console.log(e);
@@ -85,6 +85,31 @@ export const AuthProvider = ({ children }) => {
               });
           } catch (e) {
             console.error(e);
+          }
+        },
+        provider_axois_get: (_path) => {
+          try {
+            new Promise((resolve, reject) => {
+              setTimeout(resolve, 100, 'foo');
+            });
+            axios
+              .get(`${server_url}${_path}`)
+              .then((rs) => {
+                history.push("/");
+              })
+              .catch((error) => {
+                if (
+                  error.response.status === 400 ||
+                  error.response.status === 401
+                ) {
+                  removeCookie("user", { path: "/" });
+                  removeCookie("token", { path: "/" });
+                  setUser(null);
+                  history.push("/");
+                }
+              });
+          } catch (e) {
+
           }
         },
       }}

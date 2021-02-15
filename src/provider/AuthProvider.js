@@ -30,12 +30,14 @@ export const AuthProvider = ({ children }) => {
         setUser,
         login: async (username, password) => {
           try {
+            console.log(username, password)
             axios
               .post(`${server_url}/auth/login`, {
                 username,
                 password,
               })
               .then((rs) => {
+                console.log(rs)
                 if (rs.status === 200) {
                   const decoded = jwt_decode(rs.data.accessToken);
                   setCookie("user", decoded, {

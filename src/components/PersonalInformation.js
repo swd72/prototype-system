@@ -1,24 +1,26 @@
 import React, { useEffect, useContext, useState } from "react";
 import Button from "@material-ui/core/Button";
-import { Form, FormGroup, Label, Container } from "reactstrap";
+import { Form, FormGroup, Container } from "reactstrap";
 import { useForm, Controller } from "react-hook-form";
-import Chip from "@material-ui/core/Chip";
-import Avatar from "@material-ui/core/Avatar";
+// import Chip from "@material-ui/core/Chip";
+// import Avatar from "@material-ui/core/Avatar";
+import Skeleton from "@material-ui/lab/Skeleton";
 import TextField from "@material-ui/core/TextField";
-import { joiResolver } from "@hookform/resolvers/joi";
-import Joi from "joi";
+import Typography from "@material-ui/core/Typography";
+
 import axios from "axios";
 import { AuthContext } from "../provider/AuthProvider";
 import DatePicker from "./DatePicker";
 import AutocompleteAsync from "./AutocompleteAsync";
 import InputLabel from "@material-ui/core/InputLabel";
 import Grid from "@material-ui/core/Grid";
+import Select from "@material-ui/core/Grid";
 import { calcAge } from "../functions";
 
 export default function PersonalInformation(props) {
   const [resultsObject, setResultsObject] = useState({});
   const { refresh_token, server_url, token, user } = useContext(AuthContext);
-  const { handleSubmit, control, errors, setValue } = useForm();
+  const { handleSubmit, control, errors, setValue, getValues } = useForm();
   const {
     control: control2,
     errors: errors2,
@@ -151,6 +153,7 @@ export default function PersonalInformation(props) {
                     as={TextField}
                     name={"cid"}
                     control={control}
+                    disabled={true}
                     defaultValue=""
                     label={"รหัสบัตรประชาชน"}
                     fullWidth={true}
@@ -326,6 +329,7 @@ export default function PersonalInformation(props) {
                       startYear={2021 - 65}
                       endYear="2021"
                       defaultDate={resultsObject.packup_date}
+                      disabled={true}
                     />
                   ) : (
                     <DatePicker
@@ -337,6 +341,7 @@ export default function PersonalInformation(props) {
                       }}
                       startYear={2021 - 65}
                       endYear="2021"
+                      disabled={true}
                     />
                   )}
                 </FormGroup>
@@ -364,6 +369,7 @@ export default function PersonalInformation(props) {
                       startYear={2021 - 65}
                       endYear="2021"
                       defaultDate={resultsObject.startwork_date}
+                      disabled={true}
                     />
                   ) : (
                     <DatePicker
@@ -375,6 +381,7 @@ export default function PersonalInformation(props) {
                       }}
                       startYear={2021 - 65}
                       endYear="2021"
+                      disabled={true}
                     />
                   )}
                 </FormGroup>
@@ -402,6 +409,7 @@ export default function PersonalInformation(props) {
                       startYear={2021 - 65}
                       endYear="2021"
                       defaultDate={resultsObject.retire_date}
+                      disabled={true}
                     />
                   ) : (
                     <DatePicker
@@ -413,6 +421,7 @@ export default function PersonalInformation(props) {
                       }}
                       startYear={2021 - 65}
                       endYear="2021"
+                      disabled={true}
                     />
                   )}
                 </FormGroup>
@@ -440,6 +449,7 @@ export default function PersonalInformation(props) {
                       startYear={2021 - 65}
                       endYear="2021"
                       defaultDate={resultsObject.endwork_date}
+                      disabled={true}
                     />
                   ) : (
                     <DatePicker
@@ -451,6 +461,7 @@ export default function PersonalInformation(props) {
                       }}
                       startYear={2021 - 65}
                       endYear="2021"
+                      disabled={true}
                     />
                   )}
                 </FormGroup>
@@ -464,14 +475,20 @@ export default function PersonalInformation(props) {
                     control={control}
                     defaultValue=""
                     label={"กลุ่มภารกิจ"}
-                    fullWidth={true}
-                    variant="outlined"
-                    size="small"
-                    error={errors.missiongroup ? true : false}
-                    helperText={
-                      errors.missiongroup ? errors.missiongroup.message : ""
-                    }
+                    hidden
                   />
+                  {resultsObject.person_id ? (
+                    <AutocompleteAsync
+                      onChange={(e) => console.log(e)}
+                      valueDefault={parseInt(resultsObject.missiongroup || 0)}
+                      api_uri={"/c/missiongroup"}
+                      label="กลุ่มภารกิจ"
+                    />
+                  ) : (
+                    <Typography component="div" variant={"h3"}>
+                      <Skeleton />
+                    </Typography>
+                  )}
                 </FormGroup>
               </Grid>
 
@@ -483,14 +500,20 @@ export default function PersonalInformation(props) {
                     control={control}
                     defaultValue=""
                     label={"กลุ่มงาน"}
-                    fullWidth={true}
-                    variant="outlined"
-                    size="small"
-                    error={errors.workgroup ? true : false}
-                    helperText={
-                      errors.workgroup ? errors.workgroup.message : ""
-                    }
+                    hidden
                   />
+                  {resultsObject.person_id ? (
+                    <AutocompleteAsync
+                      onChange={(e) => console.log(e)}
+                      valueDefault={parseInt(resultsObject.workgroup || 0)}
+                      api_uri={"/c/workgroup"}
+                      label="กลุ่มงาน"
+                    />
+                  ) : (
+                    <Typography component="div" variant={"h3"}>
+                      <Skeleton />
+                    </Typography>
+                  )}
                 </FormGroup>
               </Grid>
 
@@ -502,82 +525,85 @@ export default function PersonalInformation(props) {
                     control={control}
                     defaultValue=""
                     label={"งาน"}
-                    fullWidth={true}
-                    variant="outlined"
-                    size="small"
-                    error={errors.cwork ? true : false}
-                    helperText={errors.cwork ? errors.cwork.message : ""}
+                    hidden
                   />
+                  {resultsObject.person_id ? (
+                    <AutocompleteAsync
+                      onChange={(e) => console.log(e)}
+                      valueDefault={parseInt(resultsObject.cwork || 0)}
+                      api_uri={"/c/cwork"}
+                      label="งาน"
+                    />
+                  ) : (
+                    <Typography component="div" variant={"h3"}>
+                      <Skeleton />
+                    </Typography>
+                  )}
                 </FormGroup>
               </Grid>
 
               <Grid item xs={12} sm={6}>
                 <FormGroup>
-                  <AutocompleteAsync onChange={(e) => console.log(e)} />
-                  {/* <Controller
-                    as={TextField}
-                    name={"position"}
-                    control={control2}
-                    defaultValue=""
-                    label={"ตำแหน่ง"}
-                    fullWidth={true}
-                    variant="outlined"
-                    size="small"
-                    error={errors2.position ? true : false}
-                    helperText={
-                      errors2.position ? errors2.position.message : ""
-                    }
-                  /> */}
+                  {resultsObject.person_id ? (
+                    <AutocompleteAsync
+                      onChange={(e) => console.log(e)}
+                      valueDefault={resultsObject.position}
+                      api_uri={"/c/position"}
+                      label="ตำแหน่ง"
+                    />
+                  ) : (
+                    <Typography component="div" variant={"h3"}>
+                      <Skeleton />
+                    </Typography>
+                  )}
                 </FormGroup>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <FormGroup>
-                  <Controller
-                    as={TextField}
-                    name={"position_type"}
-                    control={control2}
-                    defaultValue=""
-                    label={"ประเภทตำแหน่ง"}
-                    fullWidth={true}
-                    variant="outlined"
-                    size="small"
-                    error={errors2.position_type ? true : false}
-                    helperText={
-                      errors2.position_type ? errors2.position_type.message : ""
-                    }
-                  />
+                  {resultsObject.person_id ? (
+                    <AutocompleteAsync
+                      onChange={(e) => console.log(e)}
+                      valueDefault={resultsObject.position_type}
+                      api_uri={"/c/position_type"}
+                      label="ตำแหน่ง"
+                    />
+                  ) : (
+                    <Typography component="div" variant={"h3"}>
+                      <Skeleton />
+                    </Typography>
+                  )}
                 </FormGroup>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <FormGroup>
-                  <Controller
-                    as={TextField}
-                    name={"level"}
-                    control={control2}
-                    defaultValue=""
-                    label={"ระดับ"}
-                    fullWidth={true}
-                    variant="outlined"
-                    size="small"
-                    error={errors2.level ? true : false}
-                    helperText={errors2.level ? errors2.level.message : ""}
-                  />
+                  {resultsObject.person_id ? (
+                    <AutocompleteAsync
+                      onChange={(e) => console.log(e)}
+                      valueDefault={resultsObject.worklevel}
+                      api_uri={"/c/level"}
+                      label="ระดับ"
+                    />
+                  ) : (
+                    <Typography component="div" variant={"h3"}>
+                      <Skeleton />
+                    </Typography>
+                  )}
                 </FormGroup>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <FormGroup>
-                  <Controller
-                    as={TextField}
-                    name={"officer"}
-                    control={control2}
-                    defaultValue=""
-                    label={"ประเภทเจ้าหน้าที่"}
-                    fullWidth={true}
-                    variant="outlined"
-                    size="small"
-                    error={errors2.officer ? true : false}
-                    helperText={errors2.officer ? errors2.officer.message : ""}
-                  />
+                  {resultsObject.person_id ? (
+                    <AutocompleteAsync
+                      onChange={(e) => console.log(e)}
+                      valueDefault={resultsObject.officer}
+                      api_uri={"/c/officer"}
+                      label="ประเภทเจ้าหน้าที่"
+                    />
+                  ) : (
+                    <Typography component="div" variant={"h3"}>
+                      <Skeleton />
+                    </Typography>
+                  )}
                 </FormGroup>
               </Grid>
               <Grid item sm={12}>
@@ -588,6 +614,23 @@ export default function PersonalInformation(props) {
             </Grid>
           </Form>
         </div>
+        <Select
+          className="basic-single"
+          classNamePrefix="select"
+          defaultValue={
+            this.props.stateData.cmissiongroup[
+              parseInt(
+                this._getIndex(
+                  this.props.stateData.cmissiongroup,
+                  this.state.objform.missiongroup
+                )
+              )
+            ]
+          }
+          onChange={(e) => this.selectAddress(e, "missiongroup")}
+          name="missiongroup"
+          options={this.props.stateData.cmissiongroup}
+        />
       </Container>
     </div>
   );

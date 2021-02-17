@@ -255,7 +255,9 @@ export default function CustomDataTable(props) {
       .catch(async (error) => {
         if (error.response.status === 400 || error.response.status === 401) {
           refresh_token((cal) => {
-            getData(cal.token)
+            if(cal.token){
+              getData(cal.token)
+            }
           });
         }
       });

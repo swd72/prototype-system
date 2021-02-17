@@ -1,5 +1,5 @@
 import fetch from "cross-fetch";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -11,43 +11,45 @@ function sleep(delay = 0) {
   });
 }
 
-export default function AutocompleteAsync({ onChange }) {
+export default function AutocompleteAsync({
+  onChange,
+  valueDefault,
+  api_uri,
+  label,
+}) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [defaultValue, setDefaultValue] = useState({});
   const loading = open && options.length === 0;
   const { server_url, token } = useContext(AuthContext);
+  const mouted_ = useRef(null);
 
   useEffect(() => {
-    let active = true;
-
-    (async () => {
-      const response = await fetch(`${server_url}/c/position`, {
-        method: "get",
-        headers: new Headers({
-          Authorization: "Bear " + token,
-        }),
-      });
-      await sleep(1e3); // For demo purposes.
-      const options = await response.json();
-      setDefaultValue(options.results.find((e) => e.value === 10));
-      console.log(options.results.find((e) => e.value === 10));
-      if (active) {
-        setOptions(options.results);
-      }
-    })();
+    mouted_.current = true;
+    console.log(valueDefault);
+    getAsync();
     return () => {
-      active = false;
+      mouted_.current = false;
     };
-  }, [loading, server_url, token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  useEffect(() => {
-    if (!open) {
-      setOptions([]);
+  const getAsync = async () => {
+    const response = await fetch(`${server_url}${api_uri}`, {
+      method: "get",
+      headers: new Headers({
+        Authorization: "Bear " + token,
+      }),
+    });
+    const options = await response.json();
+    setDefaultValue(options.results?.find((e) => e.value === valueDefault));
+
+    if (mouted_.current) {
+      setOptions(options.results);
     }
-  }, [open]);
+  };
 
-  return (
+  return (options || []).length > 0 ? (
     <Autocomplete
       id="asynchronous-demo"
       style={{ minWidth: 100 }}
@@ -61,8 +63,7 @@ export default function AutocompleteAsync({ onChange }) {
       onChange={(event, values) => {
         onChange(values);
       }}
-      defaultValue={defaultValue.value || null}
-      value={defaultValue.value ? defaultValue.value : " "}
+      defaultValue={defaultValue?.value ? defaultValue : null}
       getOptionSelected={(option, value) => option.label === value.label}
       getOptionLabel={(option) => option.label}
       options={options}
@@ -70,7 +71,7 @@ export default function AutocompleteAsync({ onChange }) {
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Asynchronous"
+          label={label}
           variant="outlined"
           size={"small"}
           InputProps={{
@@ -87,5 +88,5 @@ export default function AutocompleteAsync({ onChange }) {
         />
       )}
     />
-  );
+  ) : null;
 }

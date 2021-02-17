@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { defaultProps } from "default-props";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function DatePicker(props) {
-  const { onSelect, startYear, endYear, defaultDate, ref } = props;
+  const { onSelect, startYear, endYear, defaultDate, ref, disabled } = props;
 
   const classes = useStyles();
   const [year, setYear] = useState(null);
@@ -101,6 +102,7 @@ export default function DatePicker(props) {
               label="ปี"
               name="year"
               size="small"
+              disabled={disabled}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -130,6 +132,7 @@ export default function DatePicker(props) {
               label="เดือน"
               name="month"
               size="small"
+              disabled={disabled}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -159,6 +162,7 @@ export default function DatePicker(props) {
               label="วันที่"
               name="days"
               size="small"
+              disabled={disabled}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -181,4 +185,8 @@ DatePicker.propTypes = {
   startYear: PropTypes.any.isRequired,
   endYear: PropTypes.any.isRequired,
   defaultDate: PropTypes.string,
+};
+
+DatePicker.defaultProps = {
+  disabled: false,
 };

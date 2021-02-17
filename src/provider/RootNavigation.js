@@ -78,7 +78,8 @@ const useStyles = (props) =>
     },
     content: {
       flexGrow: 1,
-      width: "100%",
+      minWidth: 200,
+      maxWidth: 1900,
       padding: theme.spacing(3),
     },
     purple: {
@@ -118,13 +119,15 @@ function ResponsiveDrawer(props) {
   const matches_sm = useMediaQuery((theme) => theme.breakpoints.up("md"));
 
   const { progress, styleMode, toggleStyle } = useContext(StateContext);
-  const { cookies, logout, user, setCookie } = useContext(AuthContext);
+  const { cookies, logout, user, setCookie, token, _token_ } = useContext(
+    AuthContext
+  );
 
   const [side_status, setside_status] = useState(true);
   const classes = useStyles({ side_status: side_status })();
 
   useEffect(() => {
-    setside_status(cookies.side_status==='true'?true:false);
+    setside_status(cookies.side_status === "true" ? true : false);
   }, [cookies, user]);
 
   const handleDrawerToggle = () => {
@@ -265,7 +268,6 @@ function ResponsiveDrawer(props) {
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
-
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -294,7 +296,7 @@ function ResponsiveDrawer(props) {
           <Hidden smDown implementation="css">
             <IconButton
               onClick={() => {
-                setside_status((p) =>!p);
+                setside_status((p) => !p);
                 setCookie("side_status", !side_status, { path: "/" });
               }}
               color="inherit"
@@ -517,10 +519,7 @@ function ResponsiveDrawer(props) {
       <Container className={classes.content}>
         <Toolbar variant="dense" />
         <LoadingBar progress={progress} />
-        <Switch>
-          {getRoutes(route)}
-          <Redirect from="*" to={"/mange/index"} />
-        </Switch>
+        <Switch>{getRoutes(route)}</Switch>
       </Container>
     </div>
   );

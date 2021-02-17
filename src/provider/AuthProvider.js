@@ -8,6 +8,8 @@ import configData from "../config.json";
 export const AuthContext = createContext({});
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [_token_, set_Token_] = useState(null);
   const [cookies, setCookie, removeCookie] = useCookies();
   const history = useHistory();
   const server_url =
@@ -17,7 +19,10 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     setUser(cookies.user);
-  }, [cookies]);
+    setToken(cookies.token);
+    set_Token_(cookies["-token-"]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <AuthContext.Provider
@@ -26,18 +31,20 @@ export const AuthProvider = ({ children }) => {
         cookies,
         server_url,
         history,
+        token,
+        _token_,
         setCookie,
         setUser,
         login: async (username, password) => {
           try {
-            console.log(username, password)
+            console.log(username, password);
             axios
               .post(`${server_url}/auth/login`, {
                 username,
                 password,
               })
               .then((rs) => {
-                console.log(rs)
+                console.log(rs);
                 if (rs.status === 200) {
                   const decoded = jwt_decode(rs.data.accessToken);
                   setCookie("user", decoded, {
@@ -45,7 +52,10 @@ export const AuthProvider = ({ children }) => {
                   });
                   setCookie("token", rs.data.accessToken, { path: "/" });
                   setCookie("-token-", rs.data.refreshToken, { path: "/" });
+
                   setUser(decoded);
+                  setToken(rs.data.accessToken);
+                  set_Token_(rs.data.refreshToken);
                   history.push("/");
                 } else if (rs.status === 204) {
                   console.log(rs.data.message);
@@ -67,7 +77,7 @@ export const AuthProvider = ({ children }) => {
         logout: async () => {
           try {
             axios
-              .delete(`${server_url}/auth/logout/${cookies["-token-"]}`)
+              .delete(`${server_url}/auth/logout/${_token_}`)
               .then((rs) => {
                 removeCookie("user", { path: "/" });
                 removeCookie("token", { path: "/" });
@@ -89,15 +99,23 @@ export const AuthProvider = ({ children }) => {
             console.error(e);
           }
         },
-        provider_axois_get: (_path) => {
+        refresh_token: async (callback) => {
           try {
-            new Promise((resolve, reject) => {
-              setTimeout(resolve, 100, 'foo');
-            });
             axios
-              .get(`${server_url}${_path}`)
+              .post(`${server_url}/auth/refresh-token`, {
+                refreshToken: _token_,
+              })
               .then((rs) => {
-                history.push("/");
+                const decoded = jwt_decode(rs.data.accessToken);
+                setCookie("user", decoded, {
+                  path: "/",
+                });
+                setCookie("token", rs.data.accessToken, { path: "/" });
+                setCookie("-token-", rs.data.refreshToken, { path: "/" });
+                setUser(decoded);
+                setToken(rs.data.accessToken);
+                set_Token_(rs.data.refreshToken);
+                callback({ token: rs.data.accessToken, user: decoded });
               })
               .catch((error) => {
                 if (
@@ -107,12 +125,27 @@ export const AuthProvider = ({ children }) => {
                   removeCookie("user", { path: "/" });
                   removeCookie("token", { path: "/" });
                   setUser(null);
+                  callback(false);
                   history.push("/");
                 }
               });
           } catch (e) {
-
+            console.error(e);
           }
+        },
+        provider_axois_get: (_path) => {
+          try {
+            new Promise((resolve, reject) => {
+              axios
+                .get(`${server_url}${_path}`)
+                .then((rs) => {
+                  resolve(rs);
+                })
+                .catch((error) => {
+                  reject(error);
+                });
+            });
+          } catch (e) {}
         },
       }}
     >

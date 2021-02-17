@@ -6,7 +6,8 @@ export default function SignOut(props) {
 
   useEffect(() => {
     logout();
-  }, [logout]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return <React.Fragment></React.Fragment>;
 }

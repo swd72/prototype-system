@@ -21,6 +21,7 @@ const load = (Component) => (props) => (
 
 const ProfilePage = load(lazy(() => import("./views/Profile")));
 const InformationDataPage = load(lazy(() => import("./views/InformationData")));
+const PersonManagePage = load(lazy(() => import("./views/PersonManage")));
 
 export const route = [
   {
@@ -34,13 +35,13 @@ export const route = [
     role: null,
   },
   {
-    title: "บันทึกข้อมูล",
+    title: "ข้อมูลบุคลากร",
     color: "#3E86B8",
     bgcolor: "#93CCF3",
-    router: "/dtlinsert",
+    router: "/person",
     icon: <IoIosAddCircle size="30" />,
     menuStatus: true,
-    component: HomePage,
+    component: PersonManagePage,
     role: 2,
   },
   {
@@ -81,7 +82,7 @@ export const route = [
     icon: <IoMdContact size="30" />,
     menuStatus: true,
     component: ProfilePage,
-    role: null,
+    role: 99.99,
   },
   {
     title: "ข้อมูลส่วนตัว",
@@ -91,7 +92,7 @@ export const route = [
     icon: <IoMdContact size="30" />,
     menuStatus: true,
     component: InformationDataPage,
-    role: null,
+    role: 99.99,
   },
   {
     title: "ออกจากระบบ",

@@ -5,6 +5,8 @@ import ReactDOM from "react-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import './react-responsive-tabs.css';
+import "react-confirm-alert/src/react-confirm-alert.css";
+
 import App from "./App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";

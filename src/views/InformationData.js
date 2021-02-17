@@ -1,10 +1,11 @@
 import React from "react";
 import { Container } from "reactstrap";
 import Tabs from "react-responsive-tabs";
+import PersonalInformation from "../components/PersonalInformation";
 
 export default function InformationData(props) {
   const presidents = [
-    { name: "ข้อมูลส่วนตัว", biography: " first ... ข้อมูลส่วนตัว" },
+    { name: "ข้อมูลส่วนตัว", biography: <PersonalInformation /> },
     { name: "ที่อยู่", biography: "...ที่อยู่" },
     { name: "ประวัติการศึกษา", biography: "...ประวัติการศึกษา" },
     { name: "ประวัติการอบรม", biography: "...ประวัติการอบรม" },
@@ -17,7 +18,7 @@ export default function InformationData(props) {
   const getTabs = () => {
     return presidents.map((president, index) => ({
       title: president.name,
-      getContent: () => president.biography,
+      getContent: ()=>president.biography,
       key: index,
       tabClassName: "tab",
       panelClassName: "panel",

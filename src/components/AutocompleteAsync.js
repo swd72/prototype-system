@@ -5,12 +5,6 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AuthContext } from "../provider/AuthProvider";
 
-function sleep(delay = 0) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, delay);
-  });
-}
-
 export default function AutocompleteAsync({
   onChange,
   valueDefault,
@@ -26,7 +20,6 @@ export default function AutocompleteAsync({
 
   useEffect(() => {
     mouted_.current = true;
-    console.log(valueDefault);
     getAsync();
     return () => {
       mouted_.current = false;
@@ -35,6 +28,7 @@ export default function AutocompleteAsync({
   }, []);
 
   const getAsync = async () => {
+    setOptions([]);
     const response = await fetch(`${server_url}${api_uri}`, {
       method: "get",
       headers: new Headers({

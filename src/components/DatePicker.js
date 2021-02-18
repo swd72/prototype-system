@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { defaultProps } from "default-props";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -154,25 +153,27 @@ export default function DatePicker(props) {
             <InputLabel id="demo-simple-select-outlined-label">
               วันที่
             </InputLabel>
-            <Select
-              labelId="demo-simple-select-outlined-label"
-              id="demo-simple-select-outlined"
-              value={days || ""}
-              onChange={handleChange}
-              label="วันที่"
-              name="days"
-              size="small"
-              disabled={disabled}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {daysOptions.map((val, idx) => (
-                <MenuItem key={`dayOption${idx}`} value={val}>
-                  {val}
+            {daysOptions.length > 0 && (
+              <Select
+                labelId="demo-simple-select-outlined-label"
+                id="demo-simple-select-outlined"
+                value={days || ``}
+                onChange={handleChange}
+                label="วันที่"
+                name="days"
+                size="small"
+                disabled={disabled}
+              >
+                <MenuItem value="">
+                  <em>None</em>
                 </MenuItem>
-              ))}
-            </Select>
+                {daysOptions.map((val, idx) => (
+                  <MenuItem key={`dayOption${idx}`} value={val}>
+                    {val}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
           </FormControl>
         </Grid>
       </Grid>

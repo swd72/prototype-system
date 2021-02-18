@@ -7,8 +7,7 @@ import Avatar from "@material-ui/core/Avatar";
 import TextField from "@material-ui/core/TextField";
 import { joiResolver } from "@hookform/resolvers/joi";
 import Joi from "joi";
-// import { ErrorMessage } from "@hookform/error-message";
-// import FormHelperText from '@material-ui/core/FormHelperText';
+
 
 const schema = Joi.object({
   username: Joi.string().required().messages({

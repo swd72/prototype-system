@@ -3,11 +3,11 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import {
   IoIosAddCircle,
   IoIosHome,
-  IoMdDocument,
-  IoIosPeople,
+  // IoMdDocument,
+  // IoIosPeople,
   IoMdLogOut,
   IoMdContact,
-  IoMdCube,
+  // IoMdCube,
 } from "react-icons/io";
 import HomePage from "./views/Home";
 import SignOutPage from "./views/SignOut";
@@ -19,7 +19,7 @@ const load = (Component) => (props) => (
   </Suspense>
 );
 
-const ProfilePage = load(lazy(() => import("./views/Profile")));
+// const ProfilePage = load(lazy(() => import("./views/Profile")));
 const InformationDataPage = load(lazy(() => import("./views/InformationData")));
 const PersonManagePage = load(lazy(() => import("./views/PersonManage")));
 
@@ -44,46 +44,16 @@ export const route = [
     component: PersonManagePage,
     role: 2,
   },
-  {
-    title: "รายงานข้อมูล",
-    color: "#3E86B8",
-    bgcolor: "#93CCF3",
-    router: "/report",
-    icon: <IoMdDocument size="30" />,
-    menuStatus: true,
-    component: HomePage,
-    role: 3,
-  },
-  {
-    title: "จัดการหน่วยงาน",
-    color: "#3E86B8",
-    bgcolor: "#93CCF3",
-    router: "/works",
-    icon: <IoMdCube size="30" />,
-    menuStatus: true,
-    component: HomePage,
-    role: 1,
-  },
-  {
-    title: "จัดการข้อมูลผู้ใช้",
-    color: "#3E86B8",
-    bgcolor: "#93CCF3",
-    router: "/users",
-    icon: <IoIosPeople size="30" />,
-    menuStatus: true,
-    component: HomePage,
-    role: 1,
-  },
-  {
-    title: "โปรไฟล์",
-    color: "#3E86B8",
-    bgcolor: "#93CCF3",
-    router: "/profile",
-    icon: <IoMdContact size="30" />,
-    menuStatus: true,
-    component: ProfilePage,
-    role: 99.99,
-  },
+  // {
+  //   title: "โปรไฟล์",
+  //   color: "#3E86B8",
+  //   bgcolor: "#93CCF3",
+  //   router: "/profile",
+  //   icon: <IoMdContact size="30" />,
+  //   menuStatus: true,
+  //   component: ProfilePage,
+  //   role: 99.99,
+  // },
   {
     title: "ข้อมูลส่วนตัว",
     color: "#3E86B8",

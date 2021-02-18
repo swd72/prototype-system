@@ -1,13 +1,9 @@
 import React from "react";
-import Button from "@material-ui/core/Button";
-import { Form, FormGroup, Label, Container } from "reactstrap";
-import { useForm, Controller } from "react-hook-form";
-import Chip from "@material-ui/core/Chip";
-import Avatar from "@material-ui/core/Avatar";
-import TextField from "@material-ui/core/TextField";
-import { joiResolver } from "@hookform/resolvers/joi";
-import Joi from "joi";
+import { makeStyles } from "@material-ui/core/styles";
+import BreadcrumbsComponent from "../components/BreadcrumbsComponent";
 import CustomDataTable from "../components/CustomDataTable";
+import HomeIcon from "@material-ui/icons/Home";
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 
 const headCells = [
   {
@@ -75,9 +71,31 @@ const headCells = [
   },
 ];
 
+const useStyles = makeStyles((theme) => ({
+  icon: {
+    marginRight: theme.spacing(0.5),
+    width: 20,
+    height: 20,
+  },
+}));
+
 export default function FullScreenDialog(props) {
+  const classes = useStyles();
   return (
     <div>
+      <BreadcrumbsComponent
+        objLink={[
+          {
+            icon: <HomeIcon className={classes.icon} />,
+            label: "Home",
+            path: "/",
+          },
+        ]}
+        current={{
+          icon: <AddCircleIcon className={classes.icon} />,
+          label: "ข้อมูลบุคลากร",
+        }}
+      />
       <CustomDataTable headCells={headCells} />
     </div>
   );

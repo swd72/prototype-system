@@ -22,7 +22,6 @@ import Switch from "@material-ui/core/Switch";
 import Snackbar from "@material-ui/core/Snackbar";
 import AddCircle from "@material-ui/icons/AddCircle";
 import InputBase from "@material-ui/core/InputBase";
-import Chip from "@material-ui/core/Chip";
 import { IoMdTrash } from "react-icons/io";
 import { confirmAlert } from "react-confirm-alert";
 import axios from "axios";
@@ -214,11 +213,12 @@ export default function CustomDataTable(props) {
   const [rows, setRows] = useState([]);
   const [dense, setDense] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
-  const [dialog, setDialog] = useState(false);
+  // const [dialog, setDialog] = useState(false);
   const [username, setUsername] = useState("");
   const [snackOpen, setSnackOpen] = useState(false);
-  const [snackMessage, setSnackMessage] = useState("");
+  // const [snackMessage, setSnackMessage] = useState("");
 
   const { styleMode } = useContext(StateContext);
   const { refresh_token, server_url, token } = useContext(AuthContext);
@@ -289,7 +289,7 @@ export default function CustomDataTable(props) {
   const handelManageUserType = (event) => {
     console.log(event)
     setUsername(event);
-    setDialog(true);
+    // setDialog(true);
   };
 
   const handleCloseSnack = () => {
@@ -442,7 +442,7 @@ export default function CustomDataTable(props) {
       >
         <Alert onClose={handleCloseSnack} severity={true ? "success" : "error"}>
           {" "}
-          {snackMessage}{" "}
+          {/* {snackMessage}{" "} */}
         </Alert>
       </Snackbar>
 

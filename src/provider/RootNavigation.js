@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
@@ -119,7 +119,7 @@ function ResponsiveDrawer(props) {
   const matches_sm = useMediaQuery((theme) => theme.breakpoints.up("md"));
 
   const { progress, styleMode, toggleStyle } = useContext(StateContext);
-  const { cookies, logout, user, setCookie, token, _token_ } = useContext(
+  const { cookies, logout, user, setCookie } = useContext(
     AuthContext
   );
 

@@ -1,10 +1,10 @@
 import "core-js/stable";
-import './text-encoding-polyfill.js';
+import "./text-encoding-polyfill.js";
 import React from "react";
 import ReactDOM from "react-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
-import './react-responsive-tabs.css';
+import "./react-responsive-tabs.css";
 import "react-confirm-alert/src/react-confirm-alert.css";
 
 import App from "./App";
@@ -19,12 +19,21 @@ const store = createStore(MyReducer, {
   objtoken: {},
 });
 
+const rootNode = document.getElementById("root");
+
 ReactDOM.render(
   <Provider store={store}>
-      <App />
+    <App />
   </Provider>,
-  document.getElementById("root")
+  rootNode
 );
+
+// ReactDOM.render(
+//  <Provider store={store}>
+// <App />
+// </Provider>,
+//   document.getElementById("root")
+// );
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

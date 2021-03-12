@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import PropTypes from "prop-types";
 import { lighten, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -211,20 +211,23 @@ export default function CustomDataTable(props) {
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(20);
   const [rows, setRows] = useState([]);
-  const [dense, setDense] = useState(false);
+  const [dense, setDense] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
-  // const [dialog, setDialog] = useState(false);
   const [username, setUsername] = useState("");
   const [snackOpen, setSnackOpen] = useState(false);
-  // const [snackMessage, setSnackMessage] = useState("");
 
+  const mounted_ = useRef(null);
   const { styleMode } = useContext(StateContext);
   const { refresh_token, server_url, token } = useContext(AuthContext);
 
   useEffect(() => {
+    mounted_.current = true
+    setLoading(true)
     getData();
+    return()=>{
+      mounted_.current = false
+    }
   }, [orderBy, page, order, search]);
 
   const getData = (loop_token) => {
@@ -244,12 +247,12 @@ export default function CustomDataTable(props) {
         }
       )
       .then((rs) => {
-        if (rs.status === 200) {
+        if (rs.status === 200 && mounted_.current) {
           setRows(rs.data.results);
           setTotalCount(
             rs.data.results.length > 0 ? rs.data.results[0].xtotal : 0
           );
-        } else if (rs.status === 204) {
+          setLoading(false)
         }
       })
       .catch(async (error) => {

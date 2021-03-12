@@ -14,8 +14,12 @@ import axios from "axios";
 import { AuthContext } from "../provider/AuthProvider";
 import DatePicker from "./DatePicker";
 import AutocompleteAsync from "./AutocompleteAsync";
+import AutocompleteRedux from "./AutocompleteRedux";
+
 import Grid from "@material-ui/core/Grid";
 import { calcAge } from "../functions";
+import { useSelector } from "react-redux";
+import { StateContext } from "../provider/StateProvider";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -32,15 +36,16 @@ export default function PersonalInformation(props) {
   const [resultsObject, setResultsObject] = useState({});
   const [departObject, setDepartObject] = useState({});
   const { refresh_token, server_url, token } = useContext(AuthContext);
-  const { handleSubmit, control, errors, setValue, getValues } = useForm();
+  const { _getWorkgroup, _getWork } = useContext(StateContext);
+  const { handleSubmit, control, errors, setValue } = useForm();
 
   const moute_ = useRef(null);
-  const {
-    control: control2,
-    // errors: errors2,
-    setValue: setValue2,
-    getValues: getValues2,
-  } = useForm();
+
+  const missiongroup_option = useSelector((state) => state.missiongroup_option);
+  const workgroup_option = useSelector((state) => state.workgroup_option);
+  const cwork_option = useSelector((state) => state.cwork_option);
+
+  const { control: control2, setValue: setValue2, getValues: getValues2 } = useForm();
 
   const onSubmitFirstForm = async (values) => {
     console.log({ variables: { ...values } }, getValues2());
@@ -102,10 +107,6 @@ export default function PersonalInformation(props) {
           setValue2("position_type", data_results.position_type || "");
           setValue2("worklevel", data_results.worklevel || "");
           setValue2("officer", data_results.officer || "");
-          // setRows(rs.data.results);
-          // setTotalCount(
-          //   rs.data.results.length > 0 ? rs.data.results[0].xtotal : 0
-          // );
         } else if (rs.status === 204) {
         }
       })
@@ -138,7 +139,7 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
-                      onChange={(e) => setValue("prename", e.value || "")}
+                      onChange={(e) => setValue("prename", e?.value || "")}
                       valueDefault={resultsObject.prename}
                       api_uri={"/c/prename"}
                       label="คำนำหน้า"
@@ -233,22 +234,13 @@ export default function PersonalInformation(props) {
               <Grid item xs={12} sm={4}>
                 <h5>
                   <strong className="badge badge-danger">
-                    อายุ :{" "}
-                    {calcAge(
-                      resultsObject.birthdate ? resultsObject.birthdate : ""
-                    )}
+                    อายุ : {calcAge(resultsObject.birthdate ? resultsObject.birthdate : "")}
                   </strong>
                 </h5>
               </Grid>
               <Grid item xs={12} sm={3}>
-                <FormControl
-                  variant="outlined"
-                  size="small"
-                  className={classes.formControl}
-                >
-                  <InputLabel id="demo-simple-select-outlined-label">
-                    เพศ
-                  </InputLabel>
+                <FormControl variant="outlined" size="small" className={classes.formControl}>
+                  <InputLabel id="demo-simple-select-outlined-label">เพศ</InputLabel>
                   <Controller
                     as={
                       <Select
@@ -272,14 +264,8 @@ export default function PersonalInformation(props) {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={3}>
-                <FormControl
-                  variant="outlined"
-                  size="small"
-                  className={classes.formControl}
-                >
-                  <InputLabel id="demo-simple-select-outlined-label">
-                    หมู่เลือด
-                  </InputLabel>
+                <FormControl variant="outlined" size="small" className={classes.formControl}>
+                  <InputLabel id="demo-simple-select-outlined-label">หมู่เลือด</InputLabel>
                   <Controller
                     as={
                       <Select
@@ -316,7 +302,7 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
-                      onChange={(e) => setValue("religion", e.value || "")}
+                      onChange={(e) => setValue("religion", e?.value || "")}
                       valueDefault={resultsObject.religion}
                       api_uri={"/c/religion"}
                       label="ศาสนา"
@@ -340,7 +326,7 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
-                      onChange={(e) => setValue("mstatus", e.value || "")}
+                      onChange={(e) => setValue("mstatus", e?.value || "")}
                       valueDefault={resultsObject.mstatus}
                       api_uri={"/c/mstatus"}
                       label="สถานะสมรส"
@@ -364,9 +350,7 @@ export default function PersonalInformation(props) {
                     variant="outlined"
                     size="small"
                     error={errors.father_name ? true : false}
-                    helperText={
-                      errors.father_name ? errors.father_name.message : ""
-                    }
+                    helperText={errors.father_name ? errors.father_name.message : ""}
                   />
                 </FormGroup>
               </Grid>
@@ -382,9 +366,7 @@ export default function PersonalInformation(props) {
                     variant="outlined"
                     size="small"
                     error={errors.mother_name ? true : false}
-                    helperText={
-                      errors.mother_name ? errors.mother_name.message : ""
-                    }
+                    helperText={errors.mother_name ? errors.mother_name.message : ""}
                   />
                 </FormGroup>
               </Grid>
@@ -402,10 +384,7 @@ export default function PersonalInformation(props) {
                   {resultsObject.packup_date ? (
                     <DatePicker
                       onSelect={(e) => {
-                        setValue(
-                          "packup_date",
-                          `${e.year}-${e.month}-${e.days}`
-                        );
+                        setValue("packup_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
                       endYear="2021"
@@ -415,10 +394,7 @@ export default function PersonalInformation(props) {
                   ) : (
                     <DatePicker
                       onSelect={(e) => {
-                        setValue(
-                          "packup_date",
-                          `${e.year}-${e.month}-${e.days}`
-                        );
+                        setValue("packup_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
                       endYear="2021"
@@ -442,10 +418,7 @@ export default function PersonalInformation(props) {
                   {resultsObject.startwork_date ? (
                     <DatePicker
                       onSelect={(e) => {
-                        setValue(
-                          "startwork_date",
-                          `${e.year}-${e.month}-${e.days}`
-                        );
+                        setValue("startwork_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
                       endYear="2021"
@@ -455,10 +428,7 @@ export default function PersonalInformation(props) {
                   ) : (
                     <DatePicker
                       onSelect={(e) => {
-                        setValue(
-                          "startwork_date",
-                          `${e.year}-${e.month}-${e.days}`
-                        );
+                        setValue("startwork_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
                       endYear="2021"
@@ -482,10 +452,7 @@ export default function PersonalInformation(props) {
                   {resultsObject.retire_date ? (
                     <DatePicker
                       onSelect={(e) => {
-                        setValue(
-                          "retire_date",
-                          `${e.year}-${e.month}-${e.days}`
-                        );
+                        setValue("retire_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
                       endYear="2021"
@@ -495,10 +462,7 @@ export default function PersonalInformation(props) {
                   ) : (
                     <DatePicker
                       onSelect={(e) => {
-                        setValue(
-                          "retire_date",
-                          `${e.year}-${e.month}-${e.days}`
-                        );
+                        setValue("retire_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
                       endYear="2021"
@@ -522,10 +486,7 @@ export default function PersonalInformation(props) {
                   {resultsObject.endwork_date ? (
                     <DatePicker
                       onSelect={(e) => {
-                        setValue(
-                          "endwork_date",
-                          `${e.year}-${e.month}-${e.days}`
-                        );
+                        setValue("endwork_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
                       endYear="2021"
@@ -535,10 +496,7 @@ export default function PersonalInformation(props) {
                   ) : (
                     <DatePicker
                       onSelect={(e) => {
-                        setValue(
-                          "endwork_date",
-                          `${e.year}-${e.month}-${e.days}`
-                        );
+                        setValue("endwork_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
                       endYear="2021"
@@ -548,7 +506,7 @@ export default function PersonalInformation(props) {
                 </FormGroup>
               </Grid>
 
-              {/* <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={4}>
                 <FormGroup>
                   <Controller
                     as={TextField}
@@ -559,18 +517,18 @@ export default function PersonalInformation(props) {
                     hidden
                   />
                   {resultsObject.person_id ? (
-                    <AutocompleteAsync
+                    <AutocompleteRedux
                       onChange={(e) => {
-                        setValue("missiongroup", e.value || "");
+                        setValue("missiongroup", e?.value || "");
                         setDepartObject((p) => ({
                           ...p,
-                          missiongroup: e.value,
+                          missiongroup: e?.value || "",
                           workgroup: "",
                           cwork: "",
                         }));
                       }}
                       valueDefault={parseInt(resultsObject.missiongroup || 0)}
-                      api_uri={"/c/missiongroup"}
+                      options={missiongroup_option}
                       label="กลุ่มภารกิจ"
                     />
                   ) : (
@@ -592,22 +550,20 @@ export default function PersonalInformation(props) {
                     hidden
                   />
                   {resultsObject.person_id ? (
-                    <AutocompleteAsync
+                    <AutocompleteRedux
                       onChange={(e) => {
-                        setValue("workgroup", e.value || "");
+                        setValue("workgroup", e?.value || "");
                         setDepartObject((p) => ({
                           ...p,
-                          workgroup: e.value,
+                          workgroup: e?.value || "",
                           cwork: "",
                         }));
                       }}
-                      valueDefault={parseInt(resultsObject.workgroup || 0)}
-                      api_uri={
-                        "/c/workgroup/" +
-                        (departObject.missiongroup ||
-                          resultsObject.missiongroup ||
-                          0)
-                      }
+                      valueDefault={resultsObject.workgroup || ''}
+                      options={_getWorkgroup(
+                        workgroup_option,
+                        departObject.missiongroup ? departObject.missiongroup : "9"
+                      )}
                       label="กลุ่มงาน"
                     />
                   ) : (
@@ -620,23 +576,21 @@ export default function PersonalInformation(props) {
 
               <Grid item xs={12} sm={4}>
                 <FormGroup>
-                  <Controller
-                    as={TextField}
-                    name={"cwork"}
-                    control={control}
-                    defaultValue=""
-                    label={"งาน"}
-                    hidden
-                  />
-                  {console.log(departObject.workgroup)}
+                  <Controller as={TextField} name={"cwork"} control={control} defaultValue="" label={"งาน"} hidden />
                   {resultsObject.person_id ? (
-                    <AutocompleteAsync
-                      onChange={(e) => setValue("cwork", e.value || "")}
-                      valueDefault={parseInt(resultsObject.cwork || 0)}
-                      api_uri={
-                        "/c/cwork/" +
-                        (departObject.workgroup || resultsObject.workgroup || 0)
-                      }
+                    <AutocompleteRedux
+                      onChange={(e) => {
+                        setValue("cwork", e?.value || "");
+                        setDepartObject((p) => ({
+                          ...p,
+                          cwork: e?.value || "",
+                        }));
+                      }}
+                      valueDefault={resultsObject.cwork || ''}
+                      options={_getWork(
+                        cwork_option,
+                        departObject.missiongroup ? departObject.missiongroup + "" + departObject.workgroup : "9"
+                      )}
                       label="งาน"
                     />
                   ) : (
@@ -645,7 +599,7 @@ export default function PersonalInformation(props) {
                     </Typography>
                   )}
                 </FormGroup>
-              </Grid> */}
+              </Grid>
 
               <Grid item xs={12} sm={6}>
                 <FormGroup>
@@ -659,7 +613,7 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
-                      onChange={(e) => setValue2("position", e.value || "")}
+                      onChange={(e) => setValue2("position", e?.value || "")}
                       valueDefault={resultsObject.position}
                       api_uri={"/c/position"}
                       label="ตำแหน่ง"
@@ -683,9 +637,7 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
-                      onChange={(e) =>
-                        setValue2("position_type", e.value || "")
-                      }
+                      onChange={(e) => setValue2("position_type", e?.value || "")}
                       valueDefault={resultsObject.position_type}
                       api_uri={"/c/position_type"}
                       label="ประเภทตำแหน่ง"
@@ -709,7 +661,7 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
-                      onChange={(e) => setValue2("worklevel", e.value || "")}
+                      onChange={(e) => setValue2("worklevel", e?.value || "")}
                       valueDefault={resultsObject.worklevel}
                       api_uri={"/c/level"}
                       label="ระดับ"
@@ -733,7 +685,7 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
-                      onChange={(e) => setValue2("officer", e.value || "")}
+                      onChange={(e) => setValue2("officer", e?.value || "")}
                       valueDefault={resultsObject.officer}
                       api_uri={"/c/officer"}
                       label="ประเภทเจ้าหน้าที่"

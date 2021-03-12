@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect } from "react";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
 import { useCookies } from "react-cookie";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import configData from "../config.json";
 
@@ -11,18 +12,41 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [_token_, set_Token_] = useState(null);
   const [cookies, setCookie, removeCookie] = useCookies();
+
   const history = useHistory();
-  const server_url =
-    process.env.NODE_ENV === "production"
-      ? configData.SERVER_URL
-      : configData.SERVER_URL_DEV;
+  const dispatch = useDispatch();
+
+  const server_url = process.env.NODE_ENV === "production" ? configData.SERVER_URL : configData.SERVER_URL_DEV;
 
   useEffect(() => {
-    setUser(cookies.user);
     setToken(cookies.token);
     set_Token_(cookies["-token-"]);
+    if (cookies.token) {
+      const decoded = jwt_decode(cookies.token);
+      setUser(decoded);
+      loadOptions();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const loadOptions = async () => {
+    try {
+      axios
+        .get(`${server_url}/c/all`, {
+          refreshToken: _token_,
+        })
+        .then((rs) => {
+          dispatch({ type: "SET_VALUE", name: "missiongroup_option", value: rs?.data?.missiongroup });
+          dispatch({ type: "SET_VALUE", name: "workgroup_option", value: rs?.data?.workgroup });
+          dispatch({ type: "SET_VALUE", name: "cwork_option", value: rs?.data?.cwork });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <AuthContext.Provider
@@ -37,22 +61,20 @@ export const AuthProvider = ({ children }) => {
         setUser,
         login: async (username, password) => {
           try {
-            console.log(username, password);
             axios
               .post(`${server_url}/auth/login`, {
                 username,
                 password,
               })
               .then((rs) => {
-                console.log(rs);
                 if (rs.status === 200) {
+                  loadOptions();
                   const decoded = jwt_decode(rs.data.accessToken);
-                  setCookie("user", decoded, {
+                  setCookie("user", decoded?.person_id, {
                     path: "/",
                   });
                   setCookie("token", rs.data.accessToken, { path: "/" });
                   setCookie("-token-", rs.data.refreshToken, { path: "/" });
-
                   setUser(decoded);
                   setToken(rs.data.accessToken);
                   set_Token_(rs.data.refreshToken);
@@ -85,10 +107,7 @@ export const AuthProvider = ({ children }) => {
                 history.push("/");
               })
               .catch((error) => {
-                if (
-                  error.response.status === 400 ||
-                  error.response.status === 401
-                ) {
+                if (error.response.status === 400 || error.response.status === 401) {
                   removeCookie("user", { path: "/" });
                   removeCookie("token", { path: "/" });
                   setUser(null);
@@ -107,7 +126,7 @@ export const AuthProvider = ({ children }) => {
               })
               .then((rs) => {
                 const decoded = jwt_decode(rs.data.accessToken);
-                setCookie("user", decoded, {
+                setCookie("user", decoded?.person_id, {
                   path: "/",
                 });
                 setCookie("token", rs.data.accessToken, { path: "/" });
@@ -118,10 +137,7 @@ export const AuthProvider = ({ children }) => {
                 callback({ token: rs.data.accessToken, user: decoded });
               })
               .catch((error) => {
-                if (
-                  error.response.status === 400 ||
-                  error.response.status === 401
-                ) {
+                if (error.response.status === 400 || error.response.status === 401) {
                   removeCookie("user", { path: "/" });
                   removeCookie("token", { path: "/" });
                   setUser(null);
@@ -147,6 +163,7 @@ export const AuthProvider = ({ children }) => {
             });
           } catch (e) {}
         },
+        loadOptions: loadOptions,
       }}
     >
       {children}

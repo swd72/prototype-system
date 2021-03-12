@@ -1,5 +1,4 @@
 import React, { useEffect, useContext, useState, useRef } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { Form, FormGroup, Container } from "reactstrap";
 import { useForm, Controller } from "react-hook-form";
@@ -21,18 +20,8 @@ import { calcAge } from "../functions";
 import { useSelector } from "react-redux";
 import { StateContext } from "../provider/StateProvider";
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-}));
-
 export default function PersonalInformation(props) {
   const { person_id } = props;
-  const classes = useStyles();
   const [resultsObject, setResultsObject] = useState({});
   const [departObject, setDepartObject] = useState({});
   const { refresh_token, server_url, token } = useContext(AuthContext);
@@ -239,7 +228,7 @@ export default function PersonalInformation(props) {
                 </h5>
               </Grid>
               <Grid item xs={12} sm={3}>
-                <FormControl variant="outlined" size="small" className={classes.formControl}>
+                <FormControl variant="outlined" size="small">
                   <InputLabel id="demo-simple-select-outlined-label">เพศ</InputLabel>
                   <Controller
                     as={
@@ -249,6 +238,7 @@ export default function PersonalInformation(props) {
                         label="เพศ"
                         name="days"
                         size="small"
+                        style={{ width: "100%" }}
                       >
                         <MenuItem value="">
                           <em>None</em>
@@ -264,7 +254,7 @@ export default function PersonalInformation(props) {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={3}>
-                <FormControl variant="outlined" size="small" className={classes.formControl}>
+                <FormControl variant="outlined" size="small">
                   <InputLabel id="demo-simple-select-outlined-label">หมู่เลือด</InputLabel>
                   <Controller
                     as={
@@ -559,7 +549,7 @@ export default function PersonalInformation(props) {
                           cwork: "",
                         }));
                       }}
-                      valueDefault={resultsObject.workgroup || ''}
+                      valueDefault={resultsObject.workgroup || ""}
                       options={_getWorkgroup(
                         workgroup_option,
                         departObject.missiongroup ? departObject.missiongroup : "9"
@@ -586,7 +576,7 @@ export default function PersonalInformation(props) {
                           cwork: e?.value || "",
                         }));
                       }}
-                      valueDefault={resultsObject.cwork || ''}
+                      valueDefault={resultsObject.cwork || ""}
                       options={_getWork(
                         cwork_option,
                         departObject.missiongroup ? departObject.missiongroup + "" + departObject.workgroup : "9"

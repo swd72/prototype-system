@@ -19,6 +19,9 @@ const store = createStore(MyReducer, {
   missiongroup_option: [],
   workgroup_option: [],
   cwork_option: [],
+  cprovince: [],
+  campur: [],
+  ctambon: [],
 });
 
 const rootNode = document.getElementById("root");

@@ -1,9 +1,25 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import BreadcrumbsComponent from "../components/BreadcrumbsComponent";
+import { emphasize, withStyles } from "@material-ui/core/styles";
 import CustomDataTable from "../components/CustomDataTable";
 import HomeIcon from "@material-ui/icons/Home";
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+import Chip from "@material-ui/core/Chip";
+
+const StyledBreadcrumb = withStyles((theme) => ({
+  root: {
+    backgroundColor: theme.palette.grey[100],
+    height: theme.spacing(3),
+    color: theme.palette.grey[800],
+    fontWeight: theme.typography.fontWeightRegular,
+    "&:hover, &:focus": {
+      backgroundColor: theme.palette.grey[300],
+    },
+    "&:active": {
+      boxShadow: theme.shadows[1],
+      backgroundColor: emphasize(theme.palette.grey[300], 0.12),
+    },
+  },
+}))(Chip); //
 
 const headCells = [
   {
@@ -53,7 +69,7 @@ const headCells = [
     id: "startwork_date",
     numeric: false,
     sort: true,
-    label: "วันที่",
+    label: "วันที่เริ่มทำงาน",
   },
   {
     id: "pstatus_name",
@@ -71,31 +87,26 @@ const headCells = [
   },
 ];
 
-const useStyles = makeStyles((theme) => ({
-  icon: {
-    marginRight: theme.spacing(0.5),
-    width: 20,
-    height: 20,
-  },
-}));
+function handleClick(event) {
+  event.preventDefault();
+  console.info("You clicked a breadcrumb.");
+}
 
 export default function FullScreenDialog(props) {
-  const classes = useStyles();
+
   return (
     <div>
-      <BreadcrumbsComponent
-        objLink={[
-          {
-            icon: <HomeIcon className={classes.icon} />,
-            label: "Home",
-            path: "/",
-          },
-        ]}
-        current={{
-          icon: <AddCircleIcon className={classes.icon} />,
-          label: "ข้อมูลบุคลากร",
-        }}
-      />
+      <Breadcrumbs aria-label="breadcrumb">
+        <StyledBreadcrumb
+          component="a"
+          href="#"
+          label="Home"
+          icon={<HomeIcon fontSize="small" />}
+          onClick={handleClick}
+        />
+        <StyledBreadcrumb component="a" href="#" label="Catalog" onClick={handleClick} />
+        <StyledBreadcrumb label="Accessories" />
+      </Breadcrumbs>
       <CustomDataTable headCells={headCells} />
     </div>
   );

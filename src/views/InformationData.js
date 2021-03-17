@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
-import { Container } from "reactstrap";
+// import { Container } from "reactstrap";
 import Tabs from "react-responsive-tabs";
 import PersonalInformation from "../components/PersonalInformation";
+import Address from "../components/Address";
 import { AuthContext } from "../provider/AuthProvider";
 
 export default function InformationData(props) {
@@ -10,9 +11,9 @@ export default function InformationData(props) {
   const presidents = [
     {
       name: "ข้อมูลส่วนตัว",
-      biography: <PersonalInformation person_id={user.person_id} admin_state={true}/>,
+      biography: <PersonalInformation person_id={user.person_id} admin_state={true} />,
     },
-    { name: "ที่อยู่", biography: "...ที่อยู่" },
+    { name: "ที่อยู่", biography: <Address /> },
     { name: "ประวัติการศึกษา", biography: "...ประวัติการศึกษา" },
     { name: "ประวัติการอบรม", biography: "...ประวัติการอบรม" },
     { name: "ข้อมูลใบประกอบวิชาชีพ", biography: "...ข้อมูลใบประกอบวิชาชีพ" },
@@ -36,9 +37,7 @@ export default function InformationData(props) {
 
   return (
     <div>
-      <Container className="py-3">
-        <Tabs items={getTabs()} transformWidth={0} showMore={false} />
-      </Container>
+      <Tabs items={getTabs()} transformWidth={0} showMore={false} />
     </div>
   );
 }

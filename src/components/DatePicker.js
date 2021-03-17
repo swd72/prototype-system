@@ -86,11 +86,7 @@ export default function DatePicker(props) {
     <div>
       <Grid container spacing={0}>
         <Grid item>
-          <FormControl
-            variant="outlined"
-            size="small"
-            className={classes.formControl}
-          >
+          <FormControl variant="outlined" size="small" className={classes.formControl}>
             <InputLabel id="demo-simple-select-outlined-label">ปี</InputLabel>
             <Select
               ref={ref}
@@ -115,14 +111,8 @@ export default function DatePicker(props) {
           </FormControl>
         </Grid>
         <Grid item>
-          <FormControl
-            variant="outlined"
-            size="small"
-            className={classes.formControl}
-          >
-            <InputLabel id="demo-simple-select-outlined-label">
-              เดือน
-            </InputLabel>
+          <FormControl variant="outlined" size="small" className={classes.formControl}>
+            <InputLabel id="demo-simple-select-outlined-label">เดือน</InputLabel>
             <Select
               labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
@@ -145,14 +135,8 @@ export default function DatePicker(props) {
           </FormControl>
         </Grid>
         <Grid item>
-          <FormControl
-            variant="outlined"
-            size="small"
-            className={classes.formControl}
-          >
-            <InputLabel id="demo-simple-select-outlined-label">
-              วันที่
-            </InputLabel>
+          <FormControl variant="outlined" size="small" className={classes.formControl}>
+            <InputLabel id="demo-simple-select-outlined-label">วันที่</InputLabel>
             {daysOptions.length > 0 && (
               <Select
                 labelId="demo-simple-select-outlined-label"
@@ -172,6 +156,14 @@ export default function DatePicker(props) {
                     {val}
                   </MenuItem>
                 ))}
+              </Select>
+            )}
+
+            {daysOptions.length <= 0 && (
+              <Select size="small" disabled>
+                <MenuItem>
+                  <em>None</em>
+                </MenuItem>
               </Select>
             )}
           </FormControl>

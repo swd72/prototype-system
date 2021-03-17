@@ -30,10 +30,9 @@ export default function AutocompleteAsync({ onChange, valueDefault, api_uri, lab
         Authorization: "Bear " + token,
       }),
     });
-    const options = await response.json();
-    setDefaultValue(options.results?.find((e) => e.value === valueDefault));
-
     if (mouted_.current) {
+      const options = await response.json();
+      setDefaultValue(options.results?.find((e) => e.value === valueDefault));
       setOptions(options.results);
     }
   };

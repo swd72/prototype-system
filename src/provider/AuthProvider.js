@@ -39,6 +39,9 @@ export const AuthProvider = ({ children }) => {
           dispatch({ type: "SET_VALUE", name: "missiongroup_option", value: rs?.data?.missiongroup });
           dispatch({ type: "SET_VALUE", name: "workgroup_option", value: rs?.data?.workgroup });
           dispatch({ type: "SET_VALUE", name: "cwork_option", value: rs?.data?.cwork });
+          dispatch({ type: "SET_VALUE", name: "cprovince", value: rs?.data?.cprovince });
+          dispatch({ type: "SET_VALUE", name: "campur", value: rs?.data?.campur });
+          dispatch({ type: "SET_VALUE", name: "ctambon", value: rs?.data?.ctambon });
         })
         .catch((error) => {
           console.log(error);
@@ -61,6 +64,7 @@ export const AuthProvider = ({ children }) => {
         setUser,
         login: async (username, password) => {
           try {
+            console.log(`${server_url}/auth/login`)
             axios
               .post(`${server_url}/auth/login`, {
                 username,
@@ -76,6 +80,7 @@ export const AuthProvider = ({ children }) => {
                   setCookie("token", rs.data.accessToken, { path: "/" });
                   setCookie("-token-", rs.data.refreshToken, { path: "/" });
                   setUser(decoded);
+                  console.log(decoded)
                   setToken(rs.data.accessToken);
                   set_Token_(rs.data.refreshToken);
                   history.push("/");

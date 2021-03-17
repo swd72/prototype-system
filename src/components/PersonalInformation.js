@@ -6,7 +6,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import Skeleton from "@material-ui/lab/Skeleton";
 import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import axios from "axios";
@@ -36,8 +35,33 @@ export default function PersonalInformation(props) {
 
   const { control: control2, setValue: setValue2, getValues: getValues2 } = useForm();
 
-  const onSubmitFirstForm = async (values) => {
+  const onSubmitFirstForm = async (loop_token, values) => {
     console.log({ variables: { ...values } }, getValues2());
+    axios
+      .post(
+        `${server_url}/person/update_person`,
+        {
+          ...getValues2(),
+          ...values,
+        },
+        {
+          headers: { authorization: `Bear ${loop_token || token}` },
+        }
+      )
+      .then((rs) => {
+        if (rs.status === 200 && moute_.current) {
+        } else if (rs.status === 204) {
+        }
+      })
+      .catch(async (error) => {
+        if (error.response?.status === 400 || error.response?.status === 401) {
+          refresh_token((cal) => {
+            if (cal.token) {
+              onSubmitFirstForm(cal.token, values);
+            }
+          });
+        }
+      });
   };
 
   useEffect(() => {
@@ -65,7 +89,7 @@ export default function PersonalInformation(props) {
         if (rs.status === 200 && moute_.current) {
           const data_results = rs.data.results;
           setResultsObject(data_results);
-          setValue("prename", data_results.cprename_name);
+          setValue("prename", data_results.prename);
           setValue("fname", data_results.fname);
           setValue("lname", data_results.lname);
           setValue("cid", data_results.cid);
@@ -76,6 +100,7 @@ export default function PersonalInformation(props) {
           setValue("mstatus", data_results.mstatus);
           setValue("father_name", data_results.father_name);
           setValue("mother_name", data_results.mother_name);
+          setValue("person_id", data_results.person_id);
 
           setValue("packup_date", data_results.packup_date || "");
           setValue("startwork_date", data_results.startwork_date || "");
@@ -96,6 +121,7 @@ export default function PersonalInformation(props) {
           setValue2("position_type", data_results.position_type || "");
           setValue2("worklevel", data_results.worklevel || "");
           setValue2("officer", data_results.officer || "");
+          setValue2("person_id_one", data_results.person_id_one);
         } else if (rs.status === 204) {
         }
       })
@@ -114,10 +140,11 @@ export default function PersonalInformation(props) {
     <div>
       <Container className="py-3">
         <div>
-          <Form onSubmit={handleSubmit((data) => onSubmitFirstForm(data))}>
+          <Form onSubmit={handleSubmit((data) => onSubmitFirstForm(null, data))}>
             <Grid container spacing={1}>
               <Grid item xs={12} sm={4}>
                 <FormGroup>
+                  <Controller as={TextField} name={"person_id"} control={control} defaultValue="" hidden />
                   <Controller
                     as={TextField}
                     name={"prename"}
@@ -134,9 +161,7 @@ export default function PersonalInformation(props) {
                       label="คำนำหน้า"
                     />
                   ) : (
-                    <Typography component="div" variant={"h3"}>
-                      <Skeleton />
-                    </Typography>
+                      <Skeleton height={45}/>
                   )}
                 </FormGroup>
               </Grid>
@@ -206,7 +231,7 @@ export default function PersonalInformation(props) {
                         setValue("birthdate", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
-                      endYear="2021"
+                      endYear={new Date().getFullYear()}
                       defaultDate={resultsObject.birthdate}
                     />
                   ) : (
@@ -215,7 +240,7 @@ export default function PersonalInformation(props) {
                         setValue("birthdate", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
-                      endYear="2021"
+                      endYear={new Date().getFullYear()}
                     />
                   )}
                 </FormGroup>
@@ -298,9 +323,7 @@ export default function PersonalInformation(props) {
                       label="ศาสนา"
                     />
                   ) : (
-                    <Typography component="div" variant={"h3"}>
-                      <Skeleton />
-                    </Typography>
+                    <Skeleton height={45}/>
                   )}
                 </FormGroup>
               </Grid>
@@ -322,9 +345,7 @@ export default function PersonalInformation(props) {
                       label="สถานะสมรส"
                     />
                   ) : (
-                    <Typography component="div" variant={"h3"}>
-                      <Skeleton />
-                    </Typography>
+                    <Skeleton height={45}/>
                   )}
                 </FormGroup>
               </Grid>
@@ -377,7 +398,7 @@ export default function PersonalInformation(props) {
                         setValue("packup_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
-                      endYear="2021"
+                      endYear={new Date().getFullYear()}
                       defaultDate={resultsObject.packup_date}
                       disabled={true}
                     />
@@ -387,7 +408,7 @@ export default function PersonalInformation(props) {
                         setValue("packup_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
-                      endYear="2021"
+                      endYear={new Date().getFullYear()}
                       disabled={true}
                     />
                   )}
@@ -411,7 +432,7 @@ export default function PersonalInformation(props) {
                         setValue("startwork_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
-                      endYear="2021"
+                      endYear={new Date().getFullYear()}
                       defaultDate={resultsObject.startwork_date}
                       disabled={true}
                     />
@@ -421,7 +442,7 @@ export default function PersonalInformation(props) {
                         setValue("startwork_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
-                      endYear="2021"
+                      endYear={new Date().getFullYear()}
                       disabled={true}
                     />
                   )}
@@ -445,7 +466,7 @@ export default function PersonalInformation(props) {
                         setValue("retire_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
-                      endYear="2021"
+                      endYear={new Date().getFullYear() + 45}
                       defaultDate={resultsObject.retire_date}
                       disabled={true}
                     />
@@ -455,7 +476,7 @@ export default function PersonalInformation(props) {
                         setValue("retire_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
-                      endYear="2021"
+                      endYear={new Date().getFullYear() + 45}
                       disabled={true}
                     />
                   )}
@@ -479,7 +500,7 @@ export default function PersonalInformation(props) {
                         setValue("endwork_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
-                      endYear="2021"
+                      endYear={new Date().getFullYear() + 5}
                       defaultDate={resultsObject.endwork_date}
                       disabled={true}
                     />
@@ -489,7 +510,7 @@ export default function PersonalInformation(props) {
                         setValue("endwork_date", `${e.year}-${e.month}-${e.days}`);
                       }}
                       startYear={2021 - 65}
-                      endYear="2021"
+                      endYear={new Date().getFullYear() + 5}
                       disabled={true}
                     />
                   )}
@@ -522,9 +543,7 @@ export default function PersonalInformation(props) {
                       label="กลุ่มภารกิจ"
                     />
                   ) : (
-                    <Typography component="div" variant={"h3"}>
-                      <Skeleton />
-                    </Typography>
+                    <Skeleton height={45}/>
                   )}
                 </FormGroup>
               </Grid>
@@ -557,9 +576,7 @@ export default function PersonalInformation(props) {
                       label="กลุ่มงาน"
                     />
                   ) : (
-                    <Typography component="div" variant={"h3"}>
-                      <Skeleton />
-                    </Typography>
+                    <Skeleton height={45}/>
                   )}
                 </FormGroup>
               </Grid>
@@ -584,15 +601,14 @@ export default function PersonalInformation(props) {
                       label="งาน"
                     />
                   ) : (
-                    <Typography component="div" variant={"h3"}>
-                      <Skeleton />
-                    </Typography>
+                    <Skeleton height={45}/>
                   )}
                 </FormGroup>
               </Grid>
 
               <Grid item xs={12} sm={6}>
                 <FormGroup>
+                  <Controller as={TextField} name={"person_id_one"} control={control2} defaultValue="" hidden />
                   <Controller
                     as={TextField}
                     name={"position"}
@@ -609,9 +625,7 @@ export default function PersonalInformation(props) {
                       label="ตำแหน่ง"
                     />
                   ) : (
-                    <Typography component="div" variant={"h3"}>
-                      <Skeleton />
-                    </Typography>
+                    <Skeleton height={45}/>
                   )}
                 </FormGroup>
               </Grid>
@@ -633,9 +647,7 @@ export default function PersonalInformation(props) {
                       label="ประเภทตำแหน่ง"
                     />
                   ) : (
-                    <Typography component="div" variant={"h3"}>
-                      <Skeleton />
-                    </Typography>
+                    <Skeleton height={45}/>
                   )}
                 </FormGroup>
               </Grid>
@@ -657,9 +669,7 @@ export default function PersonalInformation(props) {
                       label="ระดับ"
                     />
                   ) : (
-                    <Typography component="div" variant={"h3"}>
-                      <Skeleton />
-                    </Typography>
+                    <Skeleton height={45}/>
                   )}
                 </FormGroup>
               </Grid>
@@ -681,9 +691,7 @@ export default function PersonalInformation(props) {
                       label="ประเภทเจ้าหน้าที่"
                     />
                   ) : (
-                    <Typography component="div" variant={"h3"}>
-                      <Skeleton />
-                    </Typography>
+                    <Skeleton height={45}/>
                   )}
                 </FormGroup>
               </Grid>

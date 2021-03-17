@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Skeleton from "@material-ui/lab/Skeleton";
 
-export default function AutocompleteRedux({ onChange, valueDefault, options, label }) {
+export default function AutocompleteRedux({ onChange, valueDefault, options, label, id }) {
   const [open, setOpen] = useState(false);
   const loading = open && options.length === 0;
 
   return (options || []).length > 0 ? (
     <Autocomplete
-      id="asynchronous-demo"
-      style={{ minWidth: 100 }}
+      id={"asynchronous-demo"+id}
+      style={{ minWidth: 200 }}
       open={open}
       onOpen={() => {
         setOpen(true);
@@ -44,5 +45,7 @@ export default function AutocompleteRedux({ onChange, valueDefault, options, lab
         />
       )}
     />
-  ) : null;
+  ) : (
+    <Skeleton height={45} />
+  );
 }

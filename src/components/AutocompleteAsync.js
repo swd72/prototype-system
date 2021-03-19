@@ -5,12 +5,12 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AuthContext } from "../provider/AuthProvider";
 
-export default function AutocompleteAsync({ onChange, valueDefault, api_uri, label }) {
+export default function AutocompleteAsync({ onChange, valueDefault, api_uri, label, id }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [defaultValue, setDefaultValue] = useState({});
   const loading = open && options.length === 0;
-  const { server_url, token } = useContext(AuthContext);
+  const { server_url } = useContext(AuthContext);
   const mouted_ = useRef(null);
 
   useEffect(() => {
@@ -26,12 +26,10 @@ export default function AutocompleteAsync({ onChange, valueDefault, api_uri, lab
     setOptions([]);
     const response = await fetch(`${server_url}${api_uri}`, {
       method: "get",
-      headers: new Headers({
-        Authorization: "Bear " + token,
-      }),
     });
+    const options = await response.json();
+
     if (mouted_.current) {
-      const options = await response.json();
       setDefaultValue(options.results?.find((e) => e.value === valueDefault));
       setOptions(options.results);
     }
@@ -39,7 +37,7 @@ export default function AutocompleteAsync({ onChange, valueDefault, api_uri, lab
 
   return (options || []).length > 0 ? (
     <Autocomplete
-      id="asynchronous-demo"
+      id={"asynchronous-demo"+id}
       style={{ minWidth: 100 }}
       open={open}
       onOpen={() => {

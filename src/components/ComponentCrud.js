@@ -3,9 +3,11 @@ import { Form, Container, FormGroup } from "reactstrap";
 import { useForm, Controller } from "react-hook-form";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import InputLabel from "@material-ui/core/InputLabel";
 import Grid from "@material-ui/core/Grid";
 import AutocompleteRedux from "./AutocompleteRedux";
 import { useSelector } from "react-redux";
+import DatePicker from "./DatePicker";
 
 const ComponentCrud = ({ objForm, onSubmit, onCancel, cancelStatus }) => {
   const [addressObject, setAddressObject] = useState({});
@@ -55,6 +57,52 @@ const ComponentCrud = ({ objForm, onSubmit, onCancel, cancelStatus }) => {
               size="small"
               error={errors[val.feild] ? true : false}
               helperText={errors[val.feild] ? errors[val.feild].message : ""}
+            />
+          </FormGroup>
+        );
+        break;
+      case "autoOnRedux":
+        _return = (
+          <FormGroup key={`formFeild${idx}`}>
+            <Controller
+              as={TextField}
+              name={val.feild}
+              control={control}
+              defaultValue={value || ""}
+              label={val.label}
+              hidden
+            />
+            <AutocompleteRedux
+              id={val.feild}
+              onChange={(e) => {
+                setValue(val.feild, e?.value || "");
+              }}
+              valueDefault={value || ""}
+              options={val.options}
+              label={val.label}
+            />
+          </FormGroup>
+        );
+        break;
+      case "datePicker":
+        _return = (
+          <FormGroup key={`formFeild${idx}`}>
+            <InputLabel>{val.label}</InputLabel>
+            <Controller
+              as={TextField}
+              name={val.feild}
+              control={control}
+              defaultValue={value || ""}
+              label={val.label}
+              hidden
+            />
+            <DatePicker
+              onSelect={(e) => {
+                setValue(val.feild, `${e.year}-${e.month}-${e.days}`);
+              }}
+              startYear={2021 - 65}
+              endYear={new Date().getFullYear()+5}
+              defaultDate={value || ""}
             />
           </FormGroup>
         );

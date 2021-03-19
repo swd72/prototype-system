@@ -3,7 +3,12 @@ import React, { useContext } from "react";
 import Tabs from "react-responsive-tabs";
 import PersonalInformation from "../components/PersonalInformation";
 import Address from "../components/Address";
+import Education from "../components/Education";
 import { AuthContext } from "../provider/AuthProvider";
+import Training from "../components/Training";
+import Prolicense from "../components/Prolicense";
+import Insignia from "../components/Insignia";
+import Amnesty from "../components/Amnesty";
 
 export default function InformationData(props) {
   const { user } = useContext(AuthContext);
@@ -13,15 +18,15 @@ export default function InformationData(props) {
       name: "ข้อมูลส่วนตัว",
       biography: <PersonalInformation person_id={user.person_id} admin_state={true} />,
     },
-    { name: "ที่อยู่", biography: <Address /> },
-    { name: "ประวัติการศึกษา", biography: "...ประวัติการศึกษา" },
-    { name: "ประวัติการอบรม", biography: "...ประวัติการอบรม" },
-    { name: "ข้อมูลใบประกอบวิชาชีพ", biography: "...ข้อมูลใบประกอบวิชาชีพ" },
+    { name: "ที่อยู่", biography: <Address person_id={user.person_id} /> },
+    { name: "ประวัติการศึกษา", biography: <Education person_id={user.person_id} /> },
+    { name: "ประวัติการอบรม", biography: <Training person_id={user.person_id} /> },
+    { name: "ข้อมูลใบประกอบวิชาชีพ", biography: <Prolicense person_id={user.person_id} /> },
     {
       name: "ข้อมูลเครื่องราชอิสริยาภรณ์",
-      biography: "...ข้อมูลเครื่องราชอิสริยาภรณ์",
+      biography: <Insignia person_id={user.person_id} />,
     },
-    { name: "ข้อมูลการได้รับโทษ", biography: "...ข้อมูลการได้รับโทษ" },
+    { name: "ข้อมูลการได้รับโทษ", biography: <Amnesty person_id={user.person_id} /> },
     { name: "ข้อมูลการลา", biography: "...ข้อมูลการลา" },
   ];
 
@@ -37,6 +42,7 @@ export default function InformationData(props) {
 
   return (
     <div>
+      xxxx
       <Tabs items={getTabs()} transformWidth={0} showMore={false} />
     </div>
   );

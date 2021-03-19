@@ -22,6 +22,7 @@ import Switch from "@material-ui/core/Switch";
 import Snackbar from "@material-ui/core/Snackbar";
 import AddCircle from "@material-ui/icons/AddCircle";
 import InputBase from "@material-ui/core/InputBase";
+import Grid from "@material-ui/core/Grid";
 import { IoMdTrash } from "react-icons/io";
 import { confirmAlert } from "react-confirm-alert";
 import axios from "axios";
@@ -57,10 +58,7 @@ function EnhancedTableHead(props) {
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(
-                (headCell.firstDot ? headCell.firstDot : "") + headCell.id,
-                headCell.sort
-              )}
+              onClick={createSortHandler((headCell.firstDot ? headCell.firstDot : "") + headCell.id, headCell.sort)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -113,12 +111,7 @@ const EnhancedTableToolbar = (props) => {
   };
   return (
     <Toolbar>
-      <Typography
-        className={classes.title}
-        variant="h6"
-        id="tableTitle"
-        component="div"
-      >
+      <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
         ข้อมูลบุคลากร
       </Typography>
 
@@ -200,6 +193,9 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
   },
   hover: {},
+  container: {
+    maxHeight: "66vh",
+  },
 }));
 
 export default function CustomDataTable(props) {
@@ -208,10 +204,12 @@ export default function CustomDataTable(props) {
   const [order, setOrder] = useState("asc");
   const [search, setSearch] = useState("");
   const [orderBy, setOrderBy] = useState("p.person_id");
+  const [snackMessage, setSnackMessage] = useState("");
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(20);
   const [rows, setRows] = useState([]);
   const [dense, setDense] = useState(true);
+  const [getAll, setGetAll] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
@@ -222,13 +220,13 @@ export default function CustomDataTable(props) {
   const { refresh_token, server_url, token } = useContext(AuthContext);
 
   useEffect(() => {
-    mounted_.current = true
-    setLoading(true)
+    mounted_.current = true;
+    setLoading(true);
     getData();
-    return()=>{
-      mounted_.current = false
-    }
-  }, [orderBy, page, order, search]);
+    return () => {
+      mounted_.current = false;
+    };
+  }, [orderBy, page, order, search, rowsPerPage, getAll]);
 
   const getData = (loop_token) => {
     axios
@@ -241,6 +239,7 @@ export default function CustomDataTable(props) {
           orderBy,
           order,
           keyword: search,
+          strWhere: getAll ? `` : ` and p.pstatus not in ('7','8','9','10') `,
         },
         {
           headers: { authorization: `Bear ${loop_token || token}` }, // กำหนด headers authorization เพื่อส่งให้ api ตรวจสอบ token
@@ -249,17 +248,15 @@ export default function CustomDataTable(props) {
       .then((rs) => {
         if (rs.status === 200 && mounted_.current) {
           setRows(rs.data.results);
-          setTotalCount(
-            rs.data.results.length > 0 ? rs.data.results[0].xtotal : 0
-          );
-          setLoading(false)
+          setTotalCount(rs.data.results.length > 0 ? rs.data.results[0].xtotal : 0);
+          setLoading(false);
         }
       })
       .catch(async (error) => {
         if (error.response.status === 400 || error.response.status === 401) {
           refresh_token((cal) => {
-            if(cal.token){
-              getData(cal.token)
+            if (cal.token) {
+              getData(cal.token);
             }
           });
         }
@@ -289,8 +286,12 @@ export default function CustomDataTable(props) {
     setDense(event.target.checked);
   };
 
+  const handleChangeGetAll = (event) => {
+    setGetAll(event.target.checked);
+  };
+
   const handelManageUserType = (event) => {
-    console.log(event)
+    console.log(event);
     setUsername(event);
     // setDialog(true);
   };
@@ -308,6 +309,8 @@ export default function CustomDataTable(props) {
           label: "ใช่",
           onClick: () => {
             console.log("dddd");
+            setSnackMessage("ลบข้อมูลเสร็จสิ้น");
+            setSnackOpen(true);
           },
         },
         {
@@ -318,22 +321,18 @@ export default function CustomDataTable(props) {
     });
   };
 
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, totalCount - page * rowsPerPage);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, totalCount - page * rowsPerPage);
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar
-          onSearching={handleSearching}
-          onAddData={handelManageUserType}
-          searchText={search}
-        />
-        <TableContainer>
+        <EnhancedTableToolbar onSearching={handleSearching} onAddData={handelManageUserType} searchText={search} />
+        <TableContainer className={classes.container}>
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
             size={dense ? "small" : "medium"}
             aria-label="enhanced table"
+            stickyHeader
           >
             <EnhancedTableHead
               classes={classes}
@@ -346,19 +345,8 @@ export default function CustomDataTable(props) {
             <TableBody>
               {loading && (
                 <TableRow hover role="checkbox">
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    colSpan={7}
-                    padding="none"
-                    align="center"
-                  >
-                    <Typography
-                      className={classes.title}
-                      variant="h6"
-                      id="tableTitle"
-                      component="div"
-                    >
+                  <TableCell component="th" scope="row" colSpan={7} padding="none" align="center">
+                    <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
                       กำลังโหลด ...
                     </Typography>
                   </TableCell>
@@ -369,8 +357,6 @@ export default function CustomDataTable(props) {
                   return (
                     <TableRow
                       hover
-                      // role="checkbox"
-                      // tabIndex={-1}
                       key={`tb${index}`}
                       classes={{ hover: classes.hover }}
                       className={
@@ -383,7 +369,7 @@ export default function CustomDataTable(props) {
                     >
                       {headCells.map((val_head, idx_head) => (
                         <TableCell key={`tbcell${idx_head}`} scope="row">
-                          <InTableCell>{row[val_head.id]}</InTableCell>
+                          <InTableCell>{val_head.format ? val_head.format(row[val_head.id], row) : row[val_head.id]}</InTableCell>
                         </TableCell>
                       ))}
                       <TableCell>
@@ -392,22 +378,14 @@ export default function CustomDataTable(props) {
                           id="deleteButton"
                           close
                           aria-label="Cancel"
-                          onClick={(e) =>
-                            handleDelete(
-                              row.person_id,
-                              row.fname + " " + row.lname
-                            )
-                          }
+                          onClick={(e) => handleDelete(row.person_id, row.fname + " " + row.lname)}
                         >
                           <span aria-hidden>
                             <IoMdTrash color="red" size="30" />
                           </span>
                         </Button>
 
-                        <UncontrolledTooltip
-                          placement="top"
-                          target="deleteButton"
-                        >
+                        <UncontrolledTooltip placement="top" target="deleteButton">
                           ลบข้อมูลผู้ใช้งาน
                         </UncontrolledTooltip>
                       </TableCell>
@@ -426,15 +404,28 @@ export default function CustomDataTable(props) {
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 20, 25]}
-          component="div"
-          count={totalCount}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
+        <Grid container justify="flex-end" spacing={2}>
+          <Grid item>
+            <FormControlLabel
+              control={<Switch checked={getAll} onChange={handleChangeGetAll} />}
+              label="แสดงรายชื่อหมด"
+            />
+          </Grid>
+          <Grid item>
+            <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label="ขนาดแถว" />
+          </Grid>
+          <Grid item>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 20, 25, 50, 100, 200]}
+              component="div"
+              count={totalCount}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          </Grid>
+        </Grid>
       </Paper>
 
       <Snackbar
@@ -443,16 +434,11 @@ export default function CustomDataTable(props) {
         autoHideDuration={6000}
         onClose={handleCloseSnack}
       >
-        <Alert onClose={handleCloseSnack} severity={true ? "success" : "error"}>
+        <Alert variant="filled" onClose={handleCloseSnack} severity={true ? "success" : "error"}>
           {" "}
-          {/* {snackMessage}{" "} */}
+          {snackMessage}{" "}
         </Alert>
       </Snackbar>
-
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="ขนาดแถว"
-      />
     </div>
   );
 }

@@ -13,7 +13,8 @@ import { AuthContext } from "../provider/AuthProvider";
 import DatePicker from "./DatePicker";
 import AutocompleteAsync from "./AutocompleteAsync";
 import AutocompleteRedux from "./AutocompleteRedux";
-
+import Alert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
 import Grid from "@material-ui/core/Grid";
 import { calcAge } from "../functions";
 import { useSelector } from "react-redux";
@@ -26,6 +27,8 @@ export default function PersonalInformation(props) {
   const { refresh_token, server_url, token } = useContext(AuthContext);
   const { _getWorkgroup, _getWork } = useContext(StateContext);
   const { handleSubmit, control, errors, setValue } = useForm();
+  const [snackMessage, setSnackMessage] = useState("");
+  const [snackOpen, setSnackOpen] = useState(false);
 
   const moute_ = useRef(null);
 
@@ -36,7 +39,7 @@ export default function PersonalInformation(props) {
   const { control: control2, setValue: setValue2, getValues: getValues2 } = useForm();
 
   const onSubmitFirstForm = async (loop_token, values) => {
-    console.log({ variables: { ...values } }, getValues2());
+    // console.log({ variables: { ...values } }, getValues2());
     axios
       .post(
         `${server_url}/person/update_person`,
@@ -50,6 +53,8 @@ export default function PersonalInformation(props) {
       )
       .then((rs) => {
         if (rs.status === 200 && moute_.current) {
+          setSnackMessage("บันทึกข้อมูลสำเร็จ");
+          setSnackOpen(true);
         } else if (rs.status === 204) {
         }
       })
@@ -94,7 +99,7 @@ export default function PersonalInformation(props) {
           setValue("lname", data_results.lname);
           setValue("cid", data_results.cid);
           setValue("sex", data_results.sex);
-          setValue("bloodgroup", data_results.bloodgroup);
+          setValue("bloodgroup", data_results.bloodgroup || '');
           setValue("birthdate", data_results.birthdate);
           setValue("religion", data_results.religion);
           setValue("mstatus", data_results.mstatus);
@@ -136,6 +141,10 @@ export default function PersonalInformation(props) {
       });
   };
 
+  const handleCloseSnack = () => {
+    setSnackOpen(false);
+  };
+
   return (
     <div>
       <Container className="py-3">
@@ -155,13 +164,14 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
+                      id={"prename"}
                       onChange={(e) => setValue("prename", e?.value || "")}
                       valueDefault={resultsObject.prename}
                       api_uri={"/c/prename"}
                       label="คำนำหน้า"
                     />
                   ) : (
-                      <Skeleton height={45}/>
+                    <Skeleton height={45} />
                   )}
                 </FormGroup>
               </Grid>
@@ -317,13 +327,14 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
+                      id={"religion"}
                       onChange={(e) => setValue("religion", e?.value || "")}
                       valueDefault={resultsObject.religion}
                       api_uri={"/c/religion"}
                       label="ศาสนา"
                     />
                   ) : (
-                    <Skeleton height={45}/>
+                    <Skeleton height={45} />
                   )}
                 </FormGroup>
               </Grid>
@@ -339,13 +350,14 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
+                      id={"mstatus"}
                       onChange={(e) => setValue("mstatus", e?.value || "")}
                       valueDefault={resultsObject.mstatus}
                       api_uri={"/c/mstatus"}
                       label="สถานะสมรส"
                     />
                   ) : (
-                    <Skeleton height={45}/>
+                    <Skeleton height={45} />
                   )}
                 </FormGroup>
               </Grid>
@@ -529,6 +541,7 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteRedux
+                      id={"missiongroup"}
                       onChange={(e) => {
                         setValue("missiongroup", e?.value || "");
                         setDepartObject((p) => ({
@@ -543,7 +556,7 @@ export default function PersonalInformation(props) {
                       label="กลุ่มภารกิจ"
                     />
                   ) : (
-                    <Skeleton height={45}/>
+                    <Skeleton height={45} />
                   )}
                 </FormGroup>
               </Grid>
@@ -560,6 +573,7 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteRedux
+                      id={"workgroup"}
                       onChange={(e) => {
                         setValue("workgroup", e?.value || "");
                         setDepartObject((p) => ({
@@ -576,7 +590,7 @@ export default function PersonalInformation(props) {
                       label="กลุ่มงาน"
                     />
                   ) : (
-                    <Skeleton height={45}/>
+                    <Skeleton height={45} />
                   )}
                 </FormGroup>
               </Grid>
@@ -586,6 +600,7 @@ export default function PersonalInformation(props) {
                   <Controller as={TextField} name={"cwork"} control={control} defaultValue="" label={"งาน"} hidden />
                   {resultsObject.person_id ? (
                     <AutocompleteRedux
+                      id={"cwork"}
                       onChange={(e) => {
                         setValue("cwork", e?.value || "");
                         setDepartObject((p) => ({
@@ -601,7 +616,7 @@ export default function PersonalInformation(props) {
                       label="งาน"
                     />
                   ) : (
-                    <Skeleton height={45}/>
+                    <Skeleton height={45} />
                   )}
                 </FormGroup>
               </Grid>
@@ -619,13 +634,14 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
+                      id={"position"}
                       onChange={(e) => setValue2("position", e?.value || "")}
                       valueDefault={resultsObject.position}
                       api_uri={"/c/position"}
                       label="ตำแหน่ง"
                     />
                   ) : (
-                    <Skeleton height={45}/>
+                    <Skeleton height={45} />
                   )}
                 </FormGroup>
               </Grid>
@@ -641,13 +657,14 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
+                      id={"position_type"}
                       onChange={(e) => setValue2("position_type", e?.value || "")}
                       valueDefault={resultsObject.position_type}
                       api_uri={"/c/position_type"}
                       label="ประเภทตำแหน่ง"
                     />
                   ) : (
-                    <Skeleton height={45}/>
+                    <Skeleton height={45} />
                   )}
                 </FormGroup>
               </Grid>
@@ -663,13 +680,14 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
+                      id={"worklevel"}
                       onChange={(e) => setValue2("worklevel", e?.value || "")}
                       valueDefault={resultsObject.worklevel}
                       api_uri={"/c/level"}
                       label="ระดับ"
                     />
                   ) : (
-                    <Skeleton height={45}/>
+                    <Skeleton height={45} />
                   )}
                 </FormGroup>
               </Grid>
@@ -685,13 +703,14 @@ export default function PersonalInformation(props) {
                   />
                   {resultsObject.person_id ? (
                     <AutocompleteAsync
+                      id={"officer"}
                       onChange={(e) => setValue2("officer", e?.value || "")}
                       valueDefault={resultsObject.officer}
                       api_uri={"/c/officer"}
                       label="ประเภทเจ้าหน้าที่"
                     />
                   ) : (
-                    <Skeleton height={45}/>
+                    <Skeleton height={45} />
                   )}
                 </FormGroup>
               </Grid>
@@ -703,6 +722,18 @@ export default function PersonalInformation(props) {
             </Grid>
           </Form>
         </div>
+
+        <Snackbar
+          open={snackOpen}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          autoHideDuration={6000}
+          onClose={handleCloseSnack}
+        >
+          <Alert elevation={6} variant="filled" onClose={handleCloseSnack} severity={true ? "success" : "error"}>
+            {" "}
+            {snackMessage}{" "}
+          </Alert>
+        </Snackbar>
       </Container>
     </div>
   );

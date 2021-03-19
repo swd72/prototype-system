@@ -4,6 +4,7 @@ import { confirmAlert } from "react-confirm-alert";
 import ComponentCrud from "../components/ComponentCrud";
 import { AuthContext } from "../provider/AuthProvider";
 import { StateContext } from "../provider/StateProvider";
+import { DateThai } from "../functions";
 import DataTableMini from "./DataTableMini";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
@@ -11,23 +12,25 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import SnackMessage from "./SnackMessage";
 
 const columns = [
-  { id: "address", label: "ที่อยู่" },
-  { id: "tambonname", label: "ตำบล" },
+  { id: "course", label: "เรื่อง" },
+  { id: "affiliation", label: "หน่วยงานที่จัดอบรม" },
   {
-    id: "ampurname",
-    label: "อำเภอ",
+    id: "depart_training",
+    label: "สถานที่จัดประชุม",
   },
   {
-    id: "provname",
-    label: "จังหวัด",
+    id: "date_start",
+    label: "วันที่เริ่ม",
+    format: (value) => DateThai(value, "sortdate"),
   },
   {
-    id: "zip_code",
-    label: "รหัสไปรษณีย์",
+    id: "date_end",
+    label: "วันที่สิ้นสุด",
+    format: (value) => DateThai(value, "sortdate"),
   },
   {
     id: "note",
-    label: "หมายเหตุ",
+    label: "เพิ่มเติม",
   },
 ];
 
@@ -48,28 +51,42 @@ const actions = [
   },
 ];
 
-export default function Address({ person_id, editor }) {
+export default function Training({ person_id, editor }) {
   const [formStatus, setFormStatus] = useState(false);
+  const [messageSnack, setMessageSnack] = useState("");
   const [objForm, setObjForm] = useState([
     {
-      feild: "address",
-      label: "ที่อยู่",
+      feild: "course",
+      label: "เรื่อง",
       type: "textfeild",
     },
     {
-      feild: "f_address",
-      label: "f_address",
-      type: "addressFeild",
+      feild: "affiliation",
+      label: "หน่วยงานที่จัดอบรม",
+      type: "textfeild",
+    },
+    {
+      feild: "depart_training",
+      label: "สถานที่จัดอบรม",
+      type: "textfeild",
+    },
+    {
+      feild: "date_start",
+      label: "วันที่เริ่ม",
+      type: "datePicker",
+    },
+    {
+      feild: "date_end",
+      label: "วันที่จบ",
+      type: "datePicker",
     },
     {
       feild: "note",
-      label: "หมายเหตุ",
+      label: "ข้อมูลเพิ่มเติม",
       type: "textfeild",
     },
   ]);
-  const [address, setAddress] = useState([]);
-  const [messageSnack, setMessageSnack] = useState("");
-
+  const [training, setTraining] = useState([]);
   const { getData } = useContext(StateContext);
   const { token, user } = useContext(AuthContext);
   const mounted = useRef(null);
@@ -78,35 +95,50 @@ export default function Address({ person_id, editor }) {
     setFormStatus(false);
     setObjForm([
       {
-        feild: "address",
-        label: "ที่อยู่",
+        feild: "course",
+        label: "เรื่อง",
         type: "textfeild",
       },
       {
-        feild: "f_address",
-        label: "f_address",
-        type: "addressFeild",
+        feild: "affiliation",
+        label: "หน่วยงานที่จัดอบรม",
+        type: "textfeild",
+      },
+      {
+        feild: "depart_training",
+        label: "สถานที่จัดอบรม",
+        type: "textfeild",
+      },
+      {
+        feild: "date_start",
+        label: "วันที่เริ่ม",
+        type: "datePicker",
+      },
+      {
+        feild: "date_end",
+        label: "วันที่จบ",
+        type: "datePicker",
       },
       {
         feild: "note",
-        label: "หมายเหตุ",
+        label: "ข้อมูลเพิ่มเติม",
         type: "textfeild",
       },
     ]);
-    getData(token, { method: "get", path: "/cr/address/" + person_id }, {}, (respon) => {
+    getData(token, { method: "get", path: "/cr/training/" + person_id }, {}, (respon) => {
       if (respon.status === 200 && mounted.current) {
-        setAddress(respon.data.results);
-      } else if (mounted.current) {
-        setAddress([]);
+        setTraining(respon.data.results);
+      } else if(mounted.current){
+        setTraining([]);
       }
     });
   };
 
   useEffect(() => {
     mounted.current = true;
-    getData(token, { method: "get", path: "/cr/address/" + person_id }, {}, (respon) => {
+    getData(token, { method: "get", path: "/cr/training/" + person_id }, {}, (respon) => {
       if (respon.status === 200 && mounted.current) {
-        setAddress(respon.data.results);
+        setTraining(respon.data.results);
       }
     });
     return () => {
@@ -118,24 +150,24 @@ export default function Address({ person_id, editor }) {
     if (e.id) {
       getData(
         token,
-        { method: "patch", path: "/cr/address" },
+        { method: "patch", path: "/cr/training" },
         { ...e, person_id, action_id: user.person_id },
         (respon) => {
           if (respon.status === 200 && mounted.current) {
             formReset();
-            setMessageSnack("อัพเดทข้อมูลสำเร็จ");
+            setMessageSnack("อัพเดทข้อมูลเสร็จสิ้น");
           }
         }
       );
     } else {
       getData(
         token,
-        { method: "put", path: "/cr/address" },
+        { method: "put", path: "/cr/training" },
         { ...e, person_id, action_id: user.person_id },
         (respon) => {
           if (respon.status === 200 && mounted.current) {
             formReset();
-            setMessageSnack("เพิ่มข้อมูลสำเร็จ");
+            setMessageSnack("เพิ่มข้อมูลเสร็จสิ้น");
           }
         }
       );
@@ -146,25 +178,38 @@ export default function Address({ person_id, editor }) {
     if (type === "edit") {
       setObjForm([
         {
-          feild: "address",
-          label: "ที่อยู่",
+          feild: "course",
+          label: "เรื่อง",
           type: "textfeild",
-          value: row.address,
+          value: row.course,
         },
         {
-          feild: "f_address",
-          label: "f_address",
-          type: "addressFeild",
-          value: {
-            prov_code: row.prov_code,
-            ampur_code: row.ampur_code,
-            tambon_code: row.tambon_code,
-            zip_code: row.zip_code,
-          },
+          feild: "affiliation",
+          label: "หน่วยงานที่จัดอบรม",
+          type: "textfeild",
+          value: row.affiliation,
+        },
+        {
+          feild: "depart_training",
+          label: "สถานที่จัดอบรม",
+          type: "textfeild",
+          value: row.depart_training,
+        },
+        {
+          feild: "date_start",
+          label: "วันที่เริ่ม",
+          type: "datePicker",
+          value: row.date_start,
+        },
+        {
+          feild: "date_end",
+          label: "วันที่จบ",
+          type: "datePicker",
+          value: row.date_end,
         },
         {
           feild: "note",
-          label: "หมายเหตุ",
+          label: "ข้อมูลเพิ่มเติม",
           type: "textfeild",
           value: row.note,
         },
@@ -178,14 +223,14 @@ export default function Address({ person_id, editor }) {
     } else if (type === "delete") {
       confirmAlert({
         title: "ยืนยันการลบข้อมูล ",
-        message: 'คุณต้องการลบข้อมูล ที่อยู่" ' + row.address + ' " ใช่หรือไม่ \n',
+        message: 'คุณต้องการลบข้อมูล ชื่อสถานศึกษา" ' + row.cacademy_name + ' " ใช่หรือไม่ \n',
         buttons: [
           {
             label: "ใช่",
             onClick: () => {
-              getData(token, { method: "delete", path: "/cr/address/" + row.id }, {}, (respon) => {
+              getData(token, { method: "delete", path: "/cr/training/" + row.id }, {}, (respon) => {
                 formReset();
-                setMessageSnack("ลบข้อมูลสำเร็จ");
+                setMessageSnack("ลบข้อมูลเสร็จสิ้น");
               });
             },
           },
@@ -224,9 +269,9 @@ export default function Address({ person_id, editor }) {
         <DataTableMini
           handleAction={(type, row) => handleAction(type, row)}
           size={"medium"}
-          rows={address}
+          rows={training}
           columns={columns}
-          actions={editor?actions:[]}
+          actions={actions}
         />
         {messageSnack && <SnackMessage message={messageSnack} onReset={() => setMessageSnack(null)} type="success" />}
       </Container>
@@ -234,6 +279,6 @@ export default function Address({ person_id, editor }) {
   );
 }
 
-Address.defaultProps = {
+Training.defaultProps = {
   editor: false,
 };

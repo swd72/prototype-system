@@ -68,12 +68,10 @@ export const StateProvider = ({ children }) => {
           headers: { authorization: `Bear ${loop_token || token}` }, // กำหนด headers authorization เพื่อส่งให้ api ตรวจสอบ token
         })
         .then((rs) => {
-          if (rs.status === 200) {
-            callback(rs);
-          }
+          callback(rs);
         })
         .catch(async (error) => {
-          if (error.response.status === 400 || error.response.status === 401) {
+          if (error?.response?.status === 400 || error?.response?.status === 401) {
             refresh_token((cal) => {
               if (cal.token) {
                 getData(cal.token, option, data, callback);
@@ -87,12 +85,10 @@ export const StateProvider = ({ children }) => {
           headers: { authorization: `Bear ${loop_token || token}` }, // กำหนด headers authorization เพื่อส่งให้ api ตรวจสอบ token
         })
         .then((rs) => {
-          if (rs.status === 200) {
-            callback(rs);
-          }
+          callback(rs);
         })
         .catch(async (error) => {
-          if (error.response.status === 400 || error.response.status === 401) {
+          if (error?.response?.status === 400 || error?.response?.status === 401) {
             refresh_token((cal) => {
               if (cal.token) {
                 getData(cal.token, option, data, callback);
@@ -106,12 +102,10 @@ export const StateProvider = ({ children }) => {
           headers: { authorization: `Bear ${loop_token || token}` }, // กำหนด headers authorization เพื่อส่งให้ api ตรวจสอบ token
         })
         .then((rs) => {
-          if (rs.status === 200) {
-            callback(rs);
-          }
+          callback(rs);
         })
         .catch(async (error) => {
-          if (error.response.status === 400 || error.response.status === 401) {
+          if (error?.response?.status === 400 || error?.response?.status === 401) {
             refresh_token((cal) => {
               if (cal.token) {
                 getData(cal.token, option, data, callback);
@@ -125,12 +119,27 @@ export const StateProvider = ({ children }) => {
           headers: { authorization: `Bear ${loop_token || token}` }, // กำหนด headers authorization เพื่อส่งให้ api ตรวจสอบ token
         })
         .then((rs) => {
-          if (rs.status === 200) {
-            callback(rs);
-          }
+          callback(rs);
         })
         .catch(async (error) => {
-          if (error.response.status === 400 || error.response.status === 401) {
+          if (error?.response?.status === 400 || error?.response?.status === 401) {
+            refresh_token((cal) => {
+              if (cal.token) {
+                getData(cal.token, option, data, callback);
+              }
+            });
+          }
+        });
+    } else if (option.method === "delete" || option.method === "DELETE") {
+      axios
+        .delete(`${server_url}${option.path}`, {
+          headers: { authorization: `Bear ${loop_token || token}` }, // กำหนด headers authorization เพื่อส่งให้ api ตรวจสอบ token
+        })
+        .then((rs) => {
+          callback(rs);
+        })
+        .catch(async (error) => {
+          if (error?.response?.status === 400 || error?.response?.status === 401) {
             refresh_token((cal) => {
               if (cal.token) {
                 getData(cal.token, option, data, callback);

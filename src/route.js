@@ -1,17 +1,8 @@
 import React, { lazy, Suspense } from "react";
-import LinearProgress from '@material-ui/core/LinearProgress';
-import {
-  IoIosAddCircle,
-  IoIosHome,
-  // IoMdDocument,
-  // IoIosPeople,
-  IoMdLogOut,
-  IoMdContact,
-  // IoMdCube,
-} from "react-icons/io";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import { IoIosAddCircle, IoIosHome, IoMdLogOut, IoMdContact } from "react-icons/io";
 import HomePage from "./views/Home";
 import SignOutPage from "./views/SignOut";
-// import ProfilePage from "./views/Profile";
 
 const load = (Component) => (props) => (
   <Suspense fallback={<LinearProgress />}>
@@ -20,8 +11,9 @@ const load = (Component) => (props) => (
 );
 
 // const ProfilePage = load(lazy(() => import("./views/Profile")));
-const InformationDataPage = load(lazy(() => import("./views/InformationData")));
 const PersonManagePage = load(lazy(() => import("./views/PersonManage")));
+const InformationComponentPage = load(lazy(() => import("./views/InformationComponent")));
+const EditPersonPage = load(lazy(() => import("./views/EditPersonPage")));
 
 export const route = [
   {
@@ -31,6 +23,7 @@ export const route = [
     router: "/index",
     icon: <IoIosHome size="30" />,
     menuStatus: false,
+    sideStatus: true,
     component: HomePage,
     role: null,
   },
@@ -41,7 +34,19 @@ export const route = [
     router: "/person",
     icon: <IoIosAddCircle size="30" />,
     menuStatus: true,
+    sideStatus: true,
     component: PersonManagePage,
+    role: 2,
+  },
+  {
+    title: "แก้ไขข้อมูลบุคลากร",
+    color: "#3E86B8",
+    bgcolor: "#93CCF3",
+    router: "/hrmedit",
+    icon: <IoIosAddCircle size="30" />,
+    menuStatus: false,
+    sideStatus: false,
+    component: EditPersonPage,
     role: 2,
   },
   // {
@@ -58,10 +63,11 @@ export const route = [
     title: "ข้อมูลส่วนตัว",
     color: "#3E86B8",
     bgcolor: "#93CCF3",
-    router: "/testtab",
+    router: "/information",
     icon: <IoMdContact size="30" />,
     menuStatus: true,
-    component: InformationDataPage,
+    sideStatus: true,
+    component: InformationComponentPage,
     role: 99.99,
   },
   {
@@ -71,6 +77,7 @@ export const route = [
     router: "/logout",
     icon: <IoMdLogOut size="30" color="#C85752" />,
     menuStatus: true,
+    sideStatus: true,
     component: SignOutPage,
     role: null,
   },

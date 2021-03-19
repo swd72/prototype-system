@@ -192,7 +192,7 @@ function ResponsiveDrawer(props) {
       <List>
         {sidemenu.map(
           (val, index) =>
-            (val.role === null || user?.userType?.indexOf(val.role) >= 0) &&
+            (val.role === null || user?.userType?.indexOf(val.role) >= 0) && val.sideStatus &&
             (user?.username
               ? val.router !== "/login"
               : val.router !== "/logout") && (

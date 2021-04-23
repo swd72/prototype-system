@@ -94,17 +94,17 @@ export default function PersonalInformation(props) {
         if (rs.status === 200 && moute_.current) {
           const data_results = rs.data.results;
           setResultsObject(data_results);
-          setValue("prename", data_results.prename);
-          setValue("fname", data_results.fname);
-          setValue("lname", data_results.lname);
-          setValue("cid", data_results.cid);
-          setValue("sex", data_results.sex);
-          setValue("bloodgroup", data_results.bloodgroup || '');
-          setValue("birthdate", data_results.birthdate);
-          setValue("religion", data_results.religion);
-          setValue("mstatus", data_results.mstatus);
-          setValue("father_name", data_results.father_name);
-          setValue("mother_name", data_results.mother_name);
+          setValue("prename", data_results.prename || "");
+          setValue("fname", data_results.fname || "");
+          setValue("lname", data_results.lname || "");
+          setValue("cid", data_results.cid || "");
+          setValue("sex", data_results.sex || "");
+          setValue("bloodgroup", data_results.bloodgroup || "");
+          setValue("birthdate", data_results.birthdate || "");
+          setValue("religion", data_results.religion || "");
+          setValue("mstatus", data_results.mstatus || "");
+          setValue("father_name", data_results.father_name || "");
+          setValue("mother_name", data_results.mother_name || "");
           setValue("person_id", data_results.person_id);
 
           setValue("packup_date", data_results.packup_date || "");
